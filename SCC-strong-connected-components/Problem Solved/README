@@ -1,1 +1,28 @@
+hdu1269迷宫城堡.cpp:
+  Tarjan -----  adjacency table(vector)
 
+洛谷 P1726 上白泽慧音.cpp:
+  Tarjan -----  adjacency table(vector)
+    scc is record in 'vector< vector<int> > category'
+
+*洛谷 P2341 受欢迎的牛.cpp:
+  Tarjan -----  adjacency table(vector)
+    scc is record in 'vector< vector<int> > category'
+    **outdegree is considered**
+
+*洛谷 P2002 消息扩散.cpp:
+  Tarjan -----  adjacency table(vector)
+    **indegree is considered**
+
+*洛谷 P2863 [USACO06JAN]牛的舞会The Cow Prom.cpp:
+  Tarjan -----  adjacency table(vector)
+    number of scc is recorded
+    **indegree is considered**
+
+*洛谷P1262 间谍网络.cpp:
+  Tarjan -----  adjacency table(vector)
+    **indegree is considered**
+
+*POJ 2553.cpp:
+  Tarjan -----  adjacency table(vector)
+    **outdegree is considered**
