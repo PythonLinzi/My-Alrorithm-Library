@@ -11,7 +11,7 @@
 #define N 1100000
 using namespace std;
 
-
+//收集自某GitHub大佬的代码
 //--------------------------------------------
 class Dinic
 {
