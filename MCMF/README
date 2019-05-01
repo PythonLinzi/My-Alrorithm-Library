@@ -1,2 +1,4 @@
 Minimum Cost Maximum Flow Algorithm
   SPFA Dinic
+
+遇到卡大数据需要long long的话按照problem solved/**洛谷 P1251 餐巾计划问题.cpp**修改
