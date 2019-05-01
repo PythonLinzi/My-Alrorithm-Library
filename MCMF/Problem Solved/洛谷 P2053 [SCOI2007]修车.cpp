@@ -96,7 +96,7 @@ public:
     }
 };
 
-int t[65][15];
+
 Dinic dinic;
 int main()
 {
