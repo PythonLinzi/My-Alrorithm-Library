@@ -5,7 +5,9 @@
 #include <vector>
 #define maxn 1000005
 using namespace std;
-
+//typedef ll long long
+const int INF = 0X3f3f3f3f;
+//INF = 4557430888798830399; if long long
 
 class Dinic
 {
@@ -13,12 +15,12 @@ class Dinic
     struct Data{int maxFlow, minCost;};
     Edge edge[maxn];
     Data ans;
-    int dis[maxn], len = 1, last[maxn], S, T, INF = 0X3f3f3f3f;
+    int dis[maxn], len, last[maxn], S, T;
     bool vis[maxn];
 
     bool SPFA(){
         memset(vis, false, sizeof(vis));
-        memset(dis, 0x3f, sizeof(dis));
+        memset(dis, 0x3f, sizeof(dis));//memset(dis, 63, sizeof(dis));
         queue<int> q;
         q.push(T);
         dis[T] = 0, vis[T] = 1;
@@ -67,11 +69,24 @@ public:
         last[from] = len;
         edge[++len] = {from, last[to], 0, -cost};
         last[to] = len;
+        //有些版本的编译器不行，比如POJ？
+        /*
+        len++;
+        edge[len].to = to;
+        edge[len].pre = last[from];
+        edge[len].flow = flow;
+        edge[len].cost = cost;
+        last[from] = len;
+        len++;
+        edge[len].to = from;
+        edge[len].pre = last[to];
+        edge[len].flow = 0;
+        edge[len].cost = -cost;
+        last[to] = len;*/
     }
     Data main(int S, int T){
         this->S = S;
         this->T = T;
-        ans = {};
         while (SPFA()){
             vis[T] = true;
             while (vis[T]){
