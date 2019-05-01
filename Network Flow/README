@@ -1,0 +1,3 @@
+Two Network Flow Algorithm:
+  Ford Fulkerson --- BFS
+  Dinic --- BFS + DFS
