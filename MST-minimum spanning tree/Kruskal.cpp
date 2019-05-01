@@ -25,15 +25,15 @@ void init()
 }
 
 
-bool cmp(edge x, edge y) {return x.weight < y.weight;}
-
-
 void print_edges_ans(vector<edge> ans)
 {
     for (int i = 0; i < ans.size(); ++i)
         cout << ans[i].u << "--" << ans[i].v << " {weight: " << ans[i].weight << "}" << endl;
     cout << "Minimum weight cost : " << sum << endl;
 }
+
+
+bool cmp(edge x, edge y) {return x.weight < y.weight;}
 
 
 int find(int x)
@@ -54,10 +54,12 @@ int find(int x)
 void merge(int x, int y)
 {
     int rx = find(x), ry = find(y);
-    if (rank_[rx] < rank_[ry])
-        pre[rx] = ry;
-    else if (rank_[rx] > rank_[ry])
+    if (rx == ry)
+        return;
+    if (rank_[rx] > rank_[ry]) {
         pre[ry] = rx;
+        rank_[rx]++;
+    }
     else{
         pre[rx] = ry;
         rank_[ry]++;
@@ -92,4 +94,5 @@ int main()
     }//enter data
     kruskal();
     print_edges_ans(ans);
+    return 0;
 }
