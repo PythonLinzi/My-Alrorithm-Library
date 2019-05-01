@@ -25,13 +25,14 @@ class Kruskal:
 
     def union(self, x:int, y:int):
         rx, ry = self.find(x), self.find(y)
+        if rx == ry:
+            return
         if self.rank[rx] < self.rank[ry]:
             self.pre[rx] = ry
-        elif self.rank[rx] > self.rank[ry]:
-            self.pre[ry] = rx
-        else:
-            self.pre[rx] = ry
             self.rank[ry] += 1
+        else:
+            self.pre[ry] = rx
+            self.rank[rx] += 1
 
     def merge(self, x:int, y:int):
         rx, ry = self.find(x), self.find(y)
@@ -41,7 +42,6 @@ class Kruskal:
 
     def kruskal(self):
         e = sorted(self.e, key=lambda x: x[-1])
-        self.e.sort()
         cnt = 0
         for u, v, w in e:
             if self.find(u) != self.find(v):
@@ -51,7 +51,7 @@ class Kruskal:
                 cnt += 1
             if cnt == self.n - 1:
                 break
-        return
+        return self.ans
 
 
     def print_ans(self):
