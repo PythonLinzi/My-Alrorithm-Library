@@ -1,1 +1,35 @@
+*Two algorithm:
+  Kosaraju
+  Tarjan
+----------------------------------
+1.Elegant version:
+  scc_kosaraju.py
+  tarjans_scc.py
+    which uses two list to denote nodes: From -> To
+ 
+----------------------------------
+2.My version:
+  Tarjan.cpp ---------- adjacency matrix
+  tarjan.py ---------- adjacency matrix
+  Kosaraju.py ---------- adjacency matrix -> adjacency table
+
+It's easy to convert matrix to table, you can also refer some code from Folder::Problem Solved
+
+----------------------------------
+Three great problems
+
+洛谷 P1726 上白泽慧音.cpp:
+  Tarjan -----  adjacency table(vector)
+    scc is record in 'vector< vector<int> > category'
+
+*洛谷 P2341 受欢迎的牛.cpp:
+  Tarjan -----  adjacency table(vector)
+    scc is record in 'vector< vector<int> > category'
+    **outdegree is considered**
+
+*洛谷 P2002 消息扩散.cpp:
+  Tarjan -----  adjacency table(vector)
+    scc is record in 'vector< vector<int> > category'
+    **indegree is considered**
+
 
