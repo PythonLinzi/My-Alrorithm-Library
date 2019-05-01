@@ -4,9 +4,17 @@
 #include <queue>
 #include <vector>
 #include <iomanip>
-#include <cstdio>
 #define maxn 1000005
 using namespace std;
+
+/*
+ * S -> vehicles -> workers -> T
+ * S = 0, T = n + m * n +1
+ * node 1 ~ n denote vehicles
+ * node n + 1 ~ m * n + n denote workers
+ * there must be a vehicles' repair sequence
+ * j * n + k denote that worker_j repair the vehicle which is repaired k_th
+ */
 
 
 class Dinic
@@ -15,12 +23,12 @@ class Dinic
     struct Data{int maxFlow, minCost;};
     Edge edge[maxn];
     Data ans;
-    int dis[maxn], len = 1, last[maxn], S, T, INF = 0X3f3f3f3f;//INF = 4557430888798830399;
+    int dis[maxn], len = 1, last[maxn], S, T, INF = 0X3f3f3f3f;
     bool vis[maxn];
 
     bool SPFA(){
         memset(vis, false, sizeof(vis));
-        memset(dis, 0x3f, sizeof(dis));//memset(dis, 63, sizeof(dis));
+        memset(dis, 0x3f, sizeof(dis));
         queue<int> q;
         q.push(T);
         dis[T] = 0, vis[T] = 1;
@@ -83,15 +91,14 @@ public:
         }
         //cout << "Maximum Flow: " << ans.maxFlow << endl;
         //cout << "Minimum Cost: " << ans.minCost << endl;
-        //cout << setiosflags(ios::fixed) << setprecision(2) << 1.0 * ans.minCost / ans.maxFlow << endl;
-        printf("%.2lf\n", 1.0 * ans.minCost / ans.maxFlow);
+        cout << setiosflags(ios::fixed) << setprecision(2) << 1.0 * ans.minCost / ans.maxFlow << endl;
         return ans;
     }
 };
 
 int t[65][15];
 Dinic dinic;
-int main() //S = 0, T = n + m +1, 结点1 ~ m 代表厨师，结点m + 1 ~ m + n代表菜品
+int main()
 {
     int n, m, S = 0, T = 0;
     cin >> m >> n;
