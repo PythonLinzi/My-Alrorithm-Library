@@ -104,6 +104,7 @@ public:
 Dinic dinic;
 int main()
 {
+    ios_base::sync_with_stdio(false);
     int n, m, s, t;
     cin >> n >> m >> s >> t;
     for (int i = 0; i < m; ++i) {
