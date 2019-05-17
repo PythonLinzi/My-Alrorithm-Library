@@ -35,10 +35,10 @@ def smooth3(y:list, alpha=0.2, k=3) -> list:
     return y_predict[1:]
 
 
-def plot(x:list, y:list, y_forcast:list):
+def plot(x:list, y:list, y_forecast:list):
     line1, line2,  Overlap = Line(), Line(), Overlap()
     line1.add('观测值', x, y, line_color='blue', is_legend_show=True)
-    line2.add('预测值', x, y_forcast, line_color='red', is_legend_show=True)
+    line2.add('预测值', x, y_forecast, line_color='red', is_legend_show=True)
     overlap.add(line1)
     overlap.add(line2)
     overlap.render('result.html')
