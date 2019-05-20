@@ -1,3 +1,4 @@
+!n×n正方形矩阵;
 model:
 sets:
 	row/1..5/;
