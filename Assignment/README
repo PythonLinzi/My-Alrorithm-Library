@@ -2,5 +2,6 @@ Algorithm for Assignment sumProblem
 
 dataStruct: Matrix(n * m), 行列可不等的矩形即可
 
+PINLN.lg4 -- Lingo
 assign_scipy.py -- scipy.optimize.linear_sum_assignment
 Kuhn_Munkres.py -- munkres.Munkres
