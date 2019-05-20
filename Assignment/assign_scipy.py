@@ -34,9 +34,7 @@ def assign_max(matrix: np.ndarray):
 
 
 if __name__ == '__main__':
-	cost = [[5, 9, 1],
-			[10, 3, 2],
-			[8, 7, 4]]
+	cost = [[5, 9, 1], [10, 3, 2], [8, 7, 4]]
 	cost = np.array(cost)
 	assign(cost)
 	assign_max(cost)
