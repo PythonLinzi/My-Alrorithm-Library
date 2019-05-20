@@ -3,7 +3,6 @@ from munkres import Munkres, print_matrix
 
 def KuhnMunkres(matrix):
     '''lowest cost assignment'''
-    print_matrix(matrix)
     m = Munkres()
     idx = m.compute(matrix)
     sum = 0
@@ -17,7 +16,6 @@ def KuhnMunkres(matrix):
 
 def KuhnMunkres_Max(matrix):
     '''highest profit assignment'''
-    print_matrix(matrix)
     inf, tmp = 0x3f3f3f3f, []
     for row in matrix:
         tmp_row = []
@@ -38,5 +36,6 @@ if __name__ == '__main__':
     a = [[5, 9, 1],
          [10, 3, 2],
          [8, 7, 4]]
+    print_matrix(a)
     KuhnMunkres(a)
     KuhnMunkres_Max(a)
