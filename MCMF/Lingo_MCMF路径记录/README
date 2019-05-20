@@ -1,0 +1,7 @@
+稀疏集写法
+mcmf1.lg4 -- compute Maximal Flow
+mcmf2.lg4 -- compute Minimal Cost (after get Maximal Flow)
+
+赋权邻接矩阵写法 -- 推广到更复杂的网络
+mcmf_1.lg4 -- compute Maximal Flow
+mcmf_2.lg4 -- compute Minimal Cost (after get Maximal Flow)
