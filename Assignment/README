@@ -1,0 +1,4 @@
+Algorithm for Assignment Problem
+
+assign_scipy.py -- scipy.optimize.linear_sum_assignment
+Kuhn_Munkres.py -- munkres.Munkres
