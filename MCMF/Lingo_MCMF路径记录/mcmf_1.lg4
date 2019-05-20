@@ -1,0 +1,23 @@
+model:
+sets:
+	node/s,1,2,3,4,t/;
+	edge(node, node): c, f;!c-capacity, f-flow;
+endsets
+data:
+	c = 0;
+	@text('fdata.txt') = f;
+enddata
+calc:
+	c(1,2)=8; c(1,4)=7;
+	c(2,3)=9; c(2,4)=5;
+	c(3,4)=2; c(3,6)=5;
+	c(4,5)=9; c(5,3)=6; c(5,6)=10;
+endcalc
+n = @size(node); !顶点的个数;
+max = flow;
+@for(node(i)|i #ne#1 #and# i #ne# n:
+@sum(node(j): f(i, j)) = @sum(node(j): f(j, i)));
+@sum(node(i): f(1, i)) = flow;
+@sum(node(i): f(i, n)) = flow;
+@for(edge:@bnd(0, f,c));
+end
