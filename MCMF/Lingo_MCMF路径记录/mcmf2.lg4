@@ -1,0 +1,14 @@
+model:
+sets:
+node/s,1,2,3,4,t/: d;
+edge(node, node)/s 1, s 3, 1 2, 1 3, 2 3, 2 t, 3 4, 4 2, 4 t/ :cost, c, f;!cost, c-capacity, f-flow;
+endsets
+data:
+d = 14 0 0 0 0 -14;  !最大流为14;
+cost = 2 8 2 5 1 6 3 4 7;
+c = 8 7 9 5 2 5 9 6 10;
+enddata
+min = @sum(edge: cost * f);
+@for(node(i): @sum(edge(i, j): f(i, j)) - @sum(edge(j, i): f(j, i)) = d(i));
+@for(edge:@bnd(0, f, c));
+end
