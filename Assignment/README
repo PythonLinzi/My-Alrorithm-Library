@@ -1,4 +1,4 @@
-Algorithm for Assignment Problem
+Algorithm for Assignment sumProblem
 
 dataStruct: Matrix(n * m), 行列可不等的矩形即可
 
