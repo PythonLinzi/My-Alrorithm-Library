@@ -1,0 +1,21 @@
+!n×m长方形矩阵;
+model:
+sets:
+	row/1..5/;
+	col/1..6/;
+	link(row, col):cost, x;
+endsets
+data:
+	cost = 3 8 2 10 3 5
+		8 7 2 9 7 3
+		6 5 2 7 5 9
+		8 4 2 3 5 6
+		9 10 6 9 10 1;
+enddata
+!target function;
+!min = @sum(link: cost * x);
+min = @max(link(i, j): cost(i, j) * x(i,j));
+@for(row(i): @sum(col(j): x(i, j)) = 1);
+@for(col(j): @sum(row(i): x(i, j)) <= 1);
+@for(link: @bin(x));
+end
