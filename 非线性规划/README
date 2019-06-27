@@ -1,0 +1,2 @@
+from scipy.optimize import minimize, minimize_scalar
+结果是近似解，且对初始解有依赖
