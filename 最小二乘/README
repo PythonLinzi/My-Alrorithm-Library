@@ -15,7 +15,7 @@
   3.demo1.py
     -----非线性最小二乘拟合_scipy.optimize.curve_fit
 
-  *4.demo2.py
+  *4.demo2.py(多元函数的参数拟合)
     -----非线性最小二乘拟合_scipy.optimize.least_squares
     -----非线性拟合时，每一次结果可能不同，对初始估计值有一定依赖性
 
