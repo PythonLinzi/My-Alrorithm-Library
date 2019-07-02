@@ -11,6 +11,12 @@
 
   2.polyfit.py
     -----最小二乘多项式拟合_numpy
+    
+  3.demo1.py
+    -----非线性最小二乘拟合_scipy.optimize.curve_fit
+
+  *4.demo2.py
+    -----非线性最小二乘拟合_scipy.optimize.least_squares
 
 二、最小二乘优化问题（规划求极值）
   1.least_squares.py
