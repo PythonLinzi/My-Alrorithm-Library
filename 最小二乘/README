@@ -1,7 +1,8 @@
 一、最小二乘拟合函数参数
-  1.least_squares.py
-    -----demo1
-    -----demo2
+
 
 
 二、最小二乘优化问题（规划求极值）
+  1.least_squares.py
+    -----demo1
+    -----demo2
