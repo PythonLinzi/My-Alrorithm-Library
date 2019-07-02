@@ -1,9 +1,11 @@
 一、最小二乘拟合函数参数
   1.curve_fit.py
-    -----非线性最小二乘拟合
+    -----非线性最小二乘拟合_scipy
 
+  2.polyfit.py
+    -----最小二乘多项式拟合_numpy
 
 二、最小二乘优化问题（规划求极值）
   1.least_squares.py
-    -----demo1
-    -----demo2
+    -----demo1_scipy
+    -----demo2_scipy
