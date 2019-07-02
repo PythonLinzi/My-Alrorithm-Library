@@ -52,7 +52,7 @@ class CurveFit:
 if __name__ == '__main__':
     x = [19, 25, 31, 38, 44]
     y = [19, 32.3, 49, 73.3, 97.8]
-    def f(x, a, b):
+    def f(x, a, b): #改成指数函数等更复杂的函数仍然可以最小二乘拟合
         return a + b * x ** 2
     curve = CurveFit(f, x, y)
     curve.fit() # 拟合参数a, b
