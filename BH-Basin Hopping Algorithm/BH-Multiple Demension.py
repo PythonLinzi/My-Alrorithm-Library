@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.optimize import basinhopping
 
+
+''' 选取不同初始值多运行几次(run from a number of different starting points) '''
 ''' take two-D as example '''
 # demo1: compute directly, without gradient
 def func(x):
