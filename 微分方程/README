@@ -1,3 +1,9 @@
+For non-stiff problems: 'RK45', 'RK23'
+For stiff problems: 'Radau', 'BDF'
+If not sure: first try to run ‘RK45’. If needs unusually many iterations, diverges, or fails, 
+             it's likely to be stiff and you should use ‘Radau’ or ‘BDF’.
+             ‘LSODA’ can also be a good universal choice, but it might be somewhat less convenient to work with as it wraps old Fortran code.
+
 一、Python--version
   1.scioy.integrate.odeint (Old API)
     ---Integrate a system of ordinary differential equations.
@@ -11,4 +17,9 @@
     ---more details: https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html#scipy.integrate.solve_ivp
 
 二、Matlab--version
+
+
+
+
+
 
