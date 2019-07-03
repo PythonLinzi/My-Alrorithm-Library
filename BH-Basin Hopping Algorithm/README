@@ -1,0 +1,5 @@
+scipy.optimize.basinhopping
+
+Basin-hopping is a two-phase method that combines a global stepping algorithm with local minimization at each step.
+Designed to mimic the natural process of energy minimization of clusters of atoms.
+It works well for similar problems with “funnel-like, but rugged” energy landscapes 
