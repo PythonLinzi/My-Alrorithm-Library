@@ -1,11 +1,14 @@
 一、Python--version
-  1.scioy.integrate.odeint
+  1.scioy.integrate.odeint (Old API)
     ---Integrate a system of ordinary differential equations.
     ---Solves the initial value problem for stiff or non-stiff systems of first order ode-s:
-    ---**dy/dt = func(y, t0, ...)**  (where y can be a vector).
+    ---** dy/dt = func(y, t0, ...) **  (where y can be a vector).
   
-  2.scipy.integrate.ode
-    ---Solve an equation system **y'(t) = f(t, y)** with (optional) jac = df/dy.
+  2.scipy.integrate.solve_ivp
+    ---Solve an initial value problem for a system of ODEs.
+    ---This function numerically integrates a system of ordinary differential equations given an initial value:
+    ---** dy / dt = f(t, y), y(t0) = y0 **
+    ---more details: https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html#scipy.integrate.solve_ivp
 
 二、Matlab--version
 
