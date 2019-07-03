@@ -21,5 +21,13 @@
 
 二、最小二乘优化问题（规划求极值）
   1.least_squares.py
+    -----Solve a nonlinear least-squares problem with bounds on the variables.
     -----demo1_scipy
     -----demo2_scipy
+
+
+  2.lsq_linear.py
+    -----Solve a linear least-squares problem with bounds on the variables.
+    -----Given a m-by-n design matrix A and a target vector b with m elements, lsq_linear solves the following optimization problem:
+         min 0.5 * ||A x - b||**2
+         s.t.   lb <= x <= ub
