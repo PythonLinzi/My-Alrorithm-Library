@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 
-
+'''dy/dt = func(y, t0, ...)'''
 ''' demo: f''(t) + b * f'(t) + c * sin(f(t)) = 0 '''
 # first step: transform
 # f'(t) = g(t)
