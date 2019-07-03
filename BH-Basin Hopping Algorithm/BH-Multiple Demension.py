@@ -33,6 +33,7 @@ print("Global minimum: x = [%.4f, %.4f], f(%.4f, %.4f) = %.4f" % (ans.x[0], ans.
 
 '''----------------------------------------------------分割线--------------------------------------------------------'''
 # demo3: set take_step and bounds for differenr varible
+# and use callback to record (x, local_min_y) in every step
 class TakeStep(object):
     def __init__(self, stepsize=0.5):
         self.stepsize = stepsize
@@ -51,6 +52,12 @@ class Bounds(object):
         return tmax and tmin
 
 
+xdata, ydata = [], []
+def save(x, f, accepted): # use for callback
+    xdata.append(x)
+    ydata.append(f)
+
+
 def func(x):
     f = np.cos(14.5 * x[0] - 0.3) + (x[1] + 0.2) * x[1] + (x[0] + 0.2) * x[0]
     df = np.zeros(2)
@@ -62,5 +69,10 @@ takstep, bnds = TakeStep(), Bounds()
 x0 = np.array([1.0, 1.0]) # initial guess
 minimizer_kwargs = {"method": "L-BFGS-B", "jac": True}
 ans = basinhopping(func=func, x0=x0, niter=300, minimizer_kwargs=minimizer_kwargs,
-                   take_step=takstep, accept_test=bnds)
+                   take_step=takstep, accept_test=bnds, callback=save)
+# callback: call function "save" to record (x, miny) in every step
+
+xdata, ydata = np.array(xdata), np.array(ydata)
+xmin, ymin = xdata[ydata.argmin()], ydata.min()
 print("Global minimum: x = [%.4f, %.4f], f(%.4f, %.4f) = %.4f" % (ans.x[0], ans.x[1], ans.x[0], ans.x[1], ans.fun))
+print("Global minimum: x = [%.4f, %.4f], f(%.4f, %.4f) = %.4f" % (xmin[0], xmin[1], xmin[0], xmin[1], ymin)) #comprare
