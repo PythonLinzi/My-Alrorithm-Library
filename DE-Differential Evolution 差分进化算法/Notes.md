@@ -14,7 +14,9 @@ from the original candidate. The final parameter is always loaded from b'. Once 
 fitness is assessed. If the trial is better than the original candidate then it takes its place. If it is also better than the
 best overall candidate it also replaces that. 
 >  To improve your chances of finding a global minimum:  
->  >use higher popsizevalues, with higher mutation and (dithering), but lower recombination values.  
+>  > +use higher popsizevalues  
+>  > +with higher mutation and (dithering)  
+>  > +but lower recombination values.  
 >  >This has the effect of widening the search radius, but slowing convergence.  
 ---------
 >  By default the best solution vector is updated continuously within a single iteration (updating='immediate'). 
