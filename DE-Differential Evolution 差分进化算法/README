@@ -12,15 +12,15 @@ differential_evolution(func, bounds, args=(), strategy=’best1bin’, maxiter=1
                         recombination=0.7, seed=None, callback=None, disp=False, polish=True, init=’latinhypercube’, atol=0,
                         updating=’immediate’, workers=1)
 (1)Parameters:
-      func [callable]: The objective function to be minimized. Must be in the form f(x, *args),
+*     func [callable]: The objective function to be minimized. Must be in the form f(x, *args),
                        where x is the argument in the form of a 1-D array and args is a tuple of any additional 
                        fixed parameters needed to completely specify the function.
-      bounds [sequence or Bounds, optional]: Bounds for variables. There are two ways to specify the
+*     bounds [sequence or Bounds, optional]: Bounds for variables. There are two ways to specify the
                        bounds: 1. Instance of Bounds class. 2. (min, max) pairs for each element in x,
                        defining the finite lower and upper bounds for the optimizing argument of func. 
                        It is required to have len(bounds) == len(x). len(bounds) is used to determine the number of parameters in x.
-      args [tuple, optional]: Any additional fixed parameters needed to completely specify the objective function.
-      strategy [str, optional]: The differential evolution strategy to use. Should be one of:
+*     args [tuple, optional]: Any additional fixed parameters needed to completely specify the objective function.
+*     strategy [str, optional]: The differential evolution strategy to use. Should be one of:
                               • ‘best1bin’(Default)
                               • ‘best1exp’
                               • ‘rand1exp’
@@ -33,14 +33,14 @@ differential_evolution(func, bounds, args=(), strategy=’best1bin’, maxiter=1
                               • ‘best2bin’
                               • ‘rand2bin’
                               • ‘rand1bin’
-      maxiter [int, optional]: The maximum number of generations over which the entire population is evolved. 
+*     maxiter [int, optional]: The maximum number of generations over which the entire population is evolved. 
                                The maximum number of function evaluations (with no polishing) is: (maxiter + 1) * popsize * len(x)
-      popsize [int, optional]: A multiplier for setting the total population size. The population has popsize * len(x) individuals 
+*     popsize [int, optional]: A multiplier for setting the total population size. The population has popsize * len(x) individuals 
                                (unless the initial population is supplied via the init keyword).
-      tol [float, optional]: Relative tolerance for convergence, the solving stops 
+*     tol [float, optional]: Relative tolerance for convergence, the solving stops 
                              when np.std(pop) <= atol + tol * np.abs(np.mean(population_energies)), where and 
                              atol and tol are the absolute and relative tolerance respectively.
-      mutation [float or tuple(float, float), optional]: The mutation constant. 
+*     mutation [float or tuple(float, float), optional]: The mutation constant. 
                              In the literature this is also known as differential weight, being denoted by F. 
                              If specified as a float it should be in the range [0, 2]. 
                              If specified as a tuple (min, max) dithering is employed. 
@@ -49,7 +49,7 @@ differential_evolution(func, bounds, args=(), strategy=’best1bin’, maxiter=1
                              Dithering can help speed convergence significantly. 
                              Increasing the mutation constant increases the search radius, but will slow down convergence.
                              增加变异常数会增加搜索半径，但会减慢收敛速度。
-      recombination [float, optional]: The recombination constant, should be in the range [0, 1]. 
+*     recombination [float, optional]: The recombination constant, should be in the range [0, 1]. 
                              In the literature this is also known as the crossover probability, being denoted by CR. 
                              Increasing this value allows a larger number of mutants to progress into the next generation, 
                              but at the risk of population stability.
@@ -80,7 +80,7 @@ differential_evolution(func, bounds, args=(), strategy=’best1bin’, maxiter=1
       atol [float, optional]: Absolute tolerance for convergence, the solving stops 
                              when np.std(pop) <= atol + tol * np.abs(np.mean(population_energies)), 
                              where and atol and tol are the absolute and relative tolerance respectively.
-      updating [{‘immediate’, ‘deferred’}, optional]: If 'immediate', the best solution vector is continuously updated 
+*     updating [{‘immediate’, ‘deferred’}, optional]: If 'immediate', the best solution vector is continuously updated 
                              within a single generation [4]. This can lead to faster convergence as trial vectors can 
                              take advantage of continuous improvements in the best solution. With 'deferred', the best 
                              solution vector is updated once per generation. Only 'deferred' is compatible with parallelization, 
@@ -92,9 +92,9 @@ differential_evolution(func, bounds, args=(), strategy=’best1bin’, maxiter=1
                              This option will override the updating keyword to updating='deferred' if workers != 1. 
                              Requires that func be pickleable.
 (2)Returns:
-      *res [OptimizeResult]: The optimization result represented as a OptimizeResult object. 
+*     res [OptimizeResult]: The optimization result represented as a OptimizeResult object. 
           Important attributes are: 
-              x the solution array, 
+*             x the solution array, 
               success a Boolean flag indicating if the optimizer exited successfully and message 
               which describes the cause of the termination.
           See OptimizeResult for a description of other attributes. 
