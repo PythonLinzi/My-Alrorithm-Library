@@ -4,9 +4,8 @@ solutions to create a trial candidate. There are several strategies [2] for crea
 problems more than others. The ‘best1bin’ strategy is a good starting point for many systems. In this strategy two
 members of the population are randomly chosen. Their difference is used to mutate the best member (the best in
 best1bin), b0, so far:  
-$$
-                    \b′ = b_{0} + mutation ∗ (population[rand_{0}] − population[rand_{1}])\\
-$$  
+>                    b′ = b_{0} + mutation ∗ (population[rand_0] − population[rand_1])
+
   A trial vector is then constructed. Starting with a randomly chosen ‘i’th parameter the trial is sequentially filled
 (in modulo) with parameters from b' or the original candidate. The choice of whether to use b' or the original
 candidate is made with a binomial distribution (the ‘bin’ in ‘best1bin’) - a random number in [0, 1) is generated. If
