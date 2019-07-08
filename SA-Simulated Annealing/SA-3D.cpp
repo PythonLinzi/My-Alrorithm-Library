@@ -82,7 +82,17 @@ void SA(){
 int main()
 {
     ios_base::sync_with_stdio(false);
+    time_t s, e;
     srand((unsigned int)time(0));
+    time(&s);
     SA();
+    time(&e);
+    cout << "Running Time: " << e - s << "s" << endl;
     return 0;
 }
+
+/*
+ * coef = 0.999
+ * Best X = [0.3503, 0.8960, 0.8228], min f(x) = 9.6025
+ * Running Time: 5s
+ */
