@@ -42,7 +42,7 @@ void SA(){
         nowT *= coef;
     }
     cout << setiosflags(ios::fixed)<< setprecision(4);
-    cout << "Best X = " << ansX << ", min f(x) = " << func(ansX);
+    cout << "Best X = " << ansX << ", min f(x) = " << func(ansX) << endl;
     return ;
 }
 
@@ -51,6 +51,10 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     srand((unsigned int)time(0));
+    time_t s, e;
+    time(&s);
     SA();
+    time(&e);
+    cout << "Running Time: "<< e - s << "s" << endl;
     return 0;
 }
