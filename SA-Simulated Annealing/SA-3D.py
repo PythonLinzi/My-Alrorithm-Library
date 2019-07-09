@@ -35,7 +35,7 @@ def f(x:np.ndarray):
 def SA() -> float:
     T, finalT, coef = 1000, 1, 0.96
     K, step, niter = 1, 1, 1000
-    x, ansX = rand(3), rand(3)
+    x, ansX = rand(3), rand(3) # 注意X要在X的取值范围内随机投点
     ansY = f(ansX)
     while T > finalT:
         for i in range(niter):
@@ -71,7 +71,6 @@ ans = SA()
 print(target_func(ans))
 e = datetime.now()
 print("Running Time:", e - s)
-bnds = Bounds(ans)
 
 
 '''
