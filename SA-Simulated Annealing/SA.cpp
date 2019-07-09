@@ -12,7 +12,7 @@ using namespace std;
  * nowT: 初始温度, finalT: 结束温度
  * niter: 迭代次数, coef: 衰减系数-attenuation coefficient
  * K: 衡量参数, step: 最大步长
- * bnds: 取值范围
+ * bnds: 取值范围, 注意初始值X0要在X的取值范围内
  * 采用罚函数法将约束条件加入目标函数
  */
 
