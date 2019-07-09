@@ -21,5 +21,5 @@ def f(x:np.ndarray):
     return y
 
 bnds = [(0, 100), (0, 100), (0, 100)]
-res = DA(func=f, bounds=bnds, maxiter=1000, seed=1234)
+res = DA(func=f, bounds=bnds, maxiter=1000, seed=612)
 print("global minimum: xmin = {0}, f(xmin) = {1:.6f}".format(res.x, res.fun))
