@@ -42,9 +42,9 @@ def PSO():
     gbest_x, gbest_y = x[y.argmin()], y.min()
     for _ in range(niter):
         for i in range(N):
-            vi = K * (v[i] + c1 * rand(1) * (pbest_x[i] - x[i]) + c2 * rand(1) * (gbest_x - x[i]))
-            vi = min(vi, vmax)
-            x[i] += max(vi, vmin)
+            v[i] = K * (v[i] + c1 * rand(1) * (pbest_x[i] - x[i]) + c2 * rand(1) * (gbest_x - x[i]))
+            v[i] = min(v[i], vmax)
+            x[i] += max(v[i], vmin)
             y[i] = f(x[i])
             if y[i] < pbest_y[i]:
                 pbest_x[i], pbest_y[i] = x[i], y[i]
@@ -53,4 +53,14 @@ def PSO():
     print("Global Minimum: xmin = {0}, f(xmin) = {1:.6f}".format(gbest_x, gbest_y))
     return gbest_x, gbest_y
 
+from datetime import datetime
+s = datetime.now()
 PSO()
+e = datetime.now()
+print("Running Time:", e - s)
+
+
+'''
+Global Minimum: xmin = 6.484184832213667, f(xmin) = -1549.730940
+Running Time: 0:00:00.473265
+'''
