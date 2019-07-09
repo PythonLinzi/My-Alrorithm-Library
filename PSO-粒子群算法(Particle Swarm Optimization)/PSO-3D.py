@@ -41,7 +41,7 @@ def PSO():
     w, c1, c2 = 1, 2, 2.1
     c = c1 + c2
     K = 2 / (np.abs(2 - c - np.sqrt(c * c - 4 * c)))
-    x, v = rand(N, n), rand(N, n)
+    x, v = rand(N, n), rand(N, n) # 注意初始值X要在取值范围内随机投点
     y = np.array([f(v) for v in x])
     pbest_x, pbest_y = x.copy(), y.copy()
     gbest_x, gbest_y = x[y.argmin()], y.min()
