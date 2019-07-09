@@ -40,7 +40,7 @@ double vmin = -1, vmax = 1;
 double w = 1, c1 = 2, c2 = 2.1;
 double c = c1 + c2;
 double K = 2 / (abs(2 - c - sqrt(c * c - 4 * c)));
-double x[N], v[N], pbest_x[N], gbest_x, vi;
+double x[N], v[N], pbest_x[N], gbest_x;
 double y[N], pbest_y[N], gbest_y;
 void PSO(){
     // init
@@ -60,9 +60,9 @@ void PSO(){
     // main loop
     for (int l = 0; l < niter; ++l) {
         for (int i = 0; i < N; ++i) {
-            vi = K * (v[i] + c1 * getRand() * (pbest_x[i] - x[i]) + c2 * getRand() * (gbest_x - x[i]));
-            vi = min(vi, vmax);
-            x[i] += max(vi, vmin);
+            v[i] = K * (v[i] + c1 * getRand() * (pbest_x[i] - x[i]) + c2 * getRand() * (gbest_x - x[i]));
+            v[i] = min(v[i], vmax);
+            x[i] += max(v[i], vmin);
             y[i] = f(x[i]);
             if (y[i] < pbest_y[i]){
                 pbest_x[i] = x[i];
