@@ -36,7 +36,8 @@ def PSO():
     w, c1, c2 = 1, 2, 2.1
     c = c1 + c2
     K = 2 / (np.abs(2 - c - np.sqrt(c * c - 4 * c)))
-    x, v = rand(N), rand(N)
+    bnds = [-10, 10]
+    x, v = bnds[0] + (bnds[1] - bnds[0]) * rand(N), rand(N)
     y = np.array([f(v) for v in x])
     pbest_x, pbest_y = x.copy(), y.copy()
     gbest_x, gbest_y = x[y.argmin()], y.min()
