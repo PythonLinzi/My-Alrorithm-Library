@@ -5,55 +5,66 @@
  * nowT: 初始温度, finalT: 结束温度
  * niter: 迭代次数, coef: 衰减系数-attenuation coefficient
  * K: 衡量参数, step: 最大步长
+ * 采用罚函数法将约束条件加入目标函数
 '''
 import numpy as np
 from numpy import exp
 from numpy.random import rand
 
-def f(x:np.ndarray):
+def target_func(x:np.ndarray):
     return x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + 8
 
-def in_bnds(x:np.ndarray):
-    if not (x[0] > 0 and x[1] > 0 and x[2] > 0):
-        return False
-    if x[0] * x[0] - x[1] + x[2] * x[2] >= 0:
-        if -x[0] - x[1] * x[1] - x[2] * x[2] + 20 >= 0:
-            if x[0] + x[1] + x[1] - 2 >= 0:
-                if x[1] + 2 * x[2] * x[2] - 3 >= 0:
-                    return True
-    return False
+def Bounds(x:np.ndarray) -> np.ndarray:
+    ''' constrains <= 0 '''
+    ans = [-xx for xx in x]
+    ans.append(-x[0] * x[0] + x[1] - x[2] * x[2])
+    ans.append(x[0] + x[1] * x[1] + x[2] * x[2] - 20)
+    ans.append(-x[0] - x[1] * x[1] + 2)
+    ans.append(-x[0] - 2 * x[1] * x[1] + 3)
+    return np.array(ans)
+
+def f(x:np.ndarray):
+    y, bnds = target_func(x), Bounds(x)
+    penelty = 0x3f3f3f3f # 注意适当调整惩罚系数
+    for value in bnds:
+        if value > 0: # violation of constrains
+            y += (penelty * value)
+    return y
 
 
 def SA() -> float:
     T, finalT, coef = 1000, 1, 0.96
     K, step, niter = 1, 1, 1000
-    x, ans = rand(3), rand(3)
+    x, ansX = rand(3), rand(3)
+    ansY = f(ansX)
     while T > finalT:
         for i in range(niter):
-            y = f(x)
+            y, ansY = f(x), f(ansX)
             newx = x + step * (2 * rand(3) - 1)
-            if in_bnds(newx):
-                df = f(newx) - y
-                if df < 0:
-                    ans = x = newx
-                elif exp(-df / (K * T)) > rand():
-                    x = newx
+            newy = f(newx)
+            df1, df2 = newy - y, newy - ansY
+            if df1 < 0:
+                x = newx
+            elif exp(-df1 / (K * T)) > rand():
+                x = newx
+            if df2 < 0:
+                ansX = newx
         T *= coef
-    print("Best X =", ans)
-    print("min F(X) = %.4f" % (f(ans)))
-    return ans
+    print("Best X =", ansX)
+    print("min F(X) = %.4f" % (f(ansX)))
+    return ansX
 
 
 from datetime import datetime
 s = datetime.now()
 ans = SA()
+print(target_func(ans))
 e = datetime.now()
 print("Running Time:", e - s)
-print(f(np.array([0.3503, 0.8960, 0.8228])))
+
 
 '''
-Best X = [0.33218868 0.85070341 1.08381848]
-min F(X) = 10.0087
-Running Time: 0:00:02.275203
-9.60252593
+Best X = [1.01445542 1.01423368 0.13144296]
+min F(X) = 10.0751
+Running Time: 0:00:06.877635
 '''
