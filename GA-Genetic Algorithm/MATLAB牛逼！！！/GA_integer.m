@@ -8,7 +8,7 @@ Intcon=1:5;  %整数变量的下标
 [x,y]=ga(fun3,5,a,b,[],[],lb,ub,[],Intcon);
 fprintf('\nansX = ');disp(x);
 fprintf('ansY = %d\n', -y);
-% [x, y] = ga(@fitnessfunc, nvaes, A, b, Aeq, beq, LB, UB, @nonlcon, options)
+% [x, y] = ga(@fitnessfunc, nvars, A, b, Aeq, beq, LB, UB, @nonlcon, options)
 % A*X <= b
 % Aeq*X = beq
 % LB<X<UB
