@@ -8,6 +8,7 @@ def target_func(x:np.ndarray):
 
 def f(x:np.ndarray):
     ''' constrains <= 0 '''
+    ''' 采用罚函数法将约束条件加入目标函数 '''
     y = target_func(x)
     penelty = 0x3f3f3f3f # 惩罚系数(可以适当调整)
     bnds = -x[0] * x[0] + x[1] - x[2] * x[2]  # -x1^2 + x2 - x3^2 <= 0
@@ -23,4 +24,5 @@ def f(x:np.ndarray):
 bnds = [(0, 100), (0, 100), (0, 100)]
 res = DE(func=f, bounds=bnds, maxiter=1000, popsize=25,
          mutation=(0.5, 1), recombination=0.7, tol=0.01)
-print(res.x, res.fun)
+print("Best X =", res.x)
+print("Min f(x) =", res.fun)
