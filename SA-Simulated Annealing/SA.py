@@ -35,7 +35,8 @@ def SA():
     ''' Simulated Annealing Algorithm '''
     T, finelT, coef = 1000, 1, 0.96
     K, step, niter = 1, 1, 1000
-    x, ansX = rand(1), rand(1)
+    x_bnds = [-10, 10]
+    x, ansX = x_bnds[0] + (x_bnds[1] - x_bnds[0]) * rand(1), rand(1)
     y, ansY = f(x), f(ansX)
     while T > finelT:
         for i in range(niter):
