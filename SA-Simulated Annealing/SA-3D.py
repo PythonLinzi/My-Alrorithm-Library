@@ -16,16 +16,16 @@ def target_func(x:np.ndarray):
 
 def Bounds(x:np.ndarray) -> np.ndarray:
     ''' constrains <= 0 '''
-    ans = [-xx for xx in x]
-    ans.append(-x[0] * x[0] + x[1] - x[2] * x[2])
-    ans.append(x[0] + x[1] * x[1] + x[2] * x[2] - 20)
-    ans.append(-x[0] - x[1] * x[1] + 2)
-    ans.append(-x[0] - 2 * x[1] * x[1] + 3)
+    ans = [-xx for xx in x] # -X <= 0
+    ans.append(-x[0] * x[0] + x[1] - x[2] * x[2]) # -x1^2 + x2 - x3^2 <= 0
+    ans.append(x[0] + x[1] * x[1] + x[2] * x[2] - 20) # x1 + x2^2 + x3^2 - 20 <= 0
+    ans.append(-x[0] - x[1] * x[1] + 2) # -x1 - x2^2 + 2 <= 0
+    ans.append(-x[1] - 2 * x[2] * x[2] + 3) # -x2 - 2 * x3^2 + 3 <= 0
     return np.array(ans)
 
 def f(x:np.ndarray):
     y, bnds = target_func(x), Bounds(x)
-    penelty = 0x3f3f3f3f # 注意适当调整惩罚系数
+    penelty = 0x3f3f3f3f # 惩罚系数(可以适当调整)
     for value in bnds:
         if value > 0: # violation of constrains
             y += (penelty * value)
@@ -50,8 +50,18 @@ def SA() -> float:
             if df2 < 0:
                 ansX = newx
         T *= coef
-    print("Best X =", ansX)
-    print("min F(X) = %.4f" % (f(ansX)))
+    # 打印结果
+    bnds, check = Bounds(ansX), True
+    print(bnds) # 全部小于0则满足约束
+    for bnd in bnds:
+        if bnd > 0:
+            check = False
+    if check:
+        print("满足约束条件!")
+        print("Best X =", ansX)
+        print("min F(X) = %f" % (f(ansX)))
+    else:
+        print("不满足约束条件!")
     return ansX
 
 
@@ -61,10 +71,14 @@ ans = SA()
 print(target_func(ans))
 e = datetime.now()
 print("Running Time:", e - s)
+bnds = Bounds(ans)
 
 
 '''
-Best X = [1.01445542 1.01423368 0.13144296]
-min F(X) = 10.0751
-Running Time: 0:00:06.877635
+[-5.40383136e-01 -1.22208623e+00 -9.70183913e-01 -1.11845251e-02 -1.70248653e+01 -3.38778974e-02 -1.04599881e-01]
+满足约束条件!
+Best X = [0.54038314 1.22208623 0.97018391]
+min F(X) = 10.726766
+10.726765519164768
+Running Time: 0:00:06.787844
 '''
