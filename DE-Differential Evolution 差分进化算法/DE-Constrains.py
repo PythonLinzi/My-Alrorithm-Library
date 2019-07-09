@@ -1,3 +1,10 @@
+'''
+To improve your chances of finding a global minimum:
+ *use higher popsize values,
+ *with higher mutation and (dithering),
+ *but lower recombination values.
+ This has the effect of widening the search radius, but slowing convergence.
+'''
 import numpy as np
 from scipy.optimize import differential_evolution as DE
 
@@ -24,5 +31,4 @@ def f(x:np.ndarray):
 bnds = [(0, 100), (0, 100), (0, 100)]
 res = DE(func=f, bounds=bnds, maxiter=1000, popsize=25,
          mutation=(0.5, 1), recombination=0.7, tol=0.01)
-print("Best X =", res.x)
-print("Min f(x) =", res.fun)
+print("Global Minimum: xmin = {0}, f(xmin) = {1:.6f}".format(res.x, res.fun))
