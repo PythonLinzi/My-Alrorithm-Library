@@ -50,7 +50,18 @@ def SA():
             if df2 < 0:
                 ansX = newx
         T *= coef
-    print('Best x = %.4f, min f(x) = %.4f' % (ansX, f(ansX)))
+    # 打印结果
+    bnds, check = Bounds(ansX), True
+    print(bnds)  # 全部小于0则满足约束
+    for bnd in bnds:
+        if bnd > 0:
+            check = False
+    if check:
+        print("满足约束条件!")
+        print("Best X =", ansX)
+        print("min F(X) = %f" % (f(ansX)))
+    else:
+        print("不满足约束条件!")
     return ansX
 
 
