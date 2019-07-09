@@ -18,7 +18,7 @@ def target_func(x):
 
 def Bounds(x):
     ''' constrains <= 0  '''
-    bnds = [x - 10, -x - 10]
+    bnds = [x - 10, -x - 10] # x - 10 <= 0; -x - 10 <= 0
     return np.array(bnds)
 
 
