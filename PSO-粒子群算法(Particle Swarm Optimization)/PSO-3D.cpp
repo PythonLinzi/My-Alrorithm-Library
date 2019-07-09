@@ -59,7 +59,7 @@ double vmin = -1, vmax = 1;
 double w = 1, c1 = 2, c2 = 2.1;
 double c = c1 + c2;
 double K = 2 / (abs(2 - c - sqrt(c * c - 4 * c)));
-Points x[N], v[N], pbest_x[N], gbest_x, vi;
+Points x[N], v[N], pbest_x[N], gbest_x;
 double y[N], pbest_y[N], gbest_y;
 void PSO(){
     // init
@@ -74,14 +74,14 @@ void PSO(){
     // main loop
     for (int l = 0; l < niter; ++l) {
         for (int i = 0; i < N; ++i) {
-            for (int j = 0; j < vi.size; ++j) {
-                vi.x[j] = K * (v[i].x[j] + c1 * getRand()
+            for (int j = 0; j < v[i].size; ++j) {
+                v[i].x[j] = K * (v[i].x[j] + c1 * getRand()
                         * (pbest_x[i].x[j] - x[i].x[j]) + c2 * getRand() * (gbest_x.x[j] - x[i].x[j]));
-                vi.x[j] = min(vi.x[j], vmax);
-                vi.x[j] = max(vi.x[j], vmin);
+                v[i].x[j] = min(v[i].x[j], vmax);
+                v[i].x[j] = max(v[i].x[j], vmin);
             }
             for (int j = 0; j < x[i].size; ++j) {
-                x[i].x[j] += vi.x[j];
+                x[i].x[j] += v[i].x[j];
             }
             y[i] = f(x[i]);
             if (y[i] < pbest_y[i]){
@@ -115,7 +115,7 @@ int main()
 }
 
 /*
- * Global Minimum: xmin = 0.615724 1.1783 0.964955
- * f(xmin) = 10.6986
+ * Global Minimum: xmin = 0.552167 1.20326 0.947824
+ * f(xmin) = 10.6511
  * Running Time: 0s
  */
