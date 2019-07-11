@@ -2,7 +2,7 @@ clear, clc;
 pos_X = [1, 3, 6, 12, 19, 22, 23, 20, 21, 22.5, 40, 44, 42, 36, 39, 58, 62, 88, 90, 83, 71, 67, 64, 52, 84, 87, 71, 71, 58, 80, 1];
 pos_Y = [99, 50, 64, 40, 41, 42, 37, 54, 60, 60.5, 26, 20, 35, 83, 95, 33, 30.5, 6, 38, 44, 42, 57, 59, 62, 65, 74, 70, 77, 68, 66, 99];
 n = size(pos_X, 2);
-d = zeros(n);                                % 初始化距离矩阵d
+d = zeros(n);                                % 初始化距离Matrix d
 for i = 1:n                                  % 计算距离Matrix
    for j = 1:n
         d(i,j) = sqrt((pos_X(i) - pos_X(j))^2 + (pos_Y(i) - pos_Y(j))^2);
@@ -35,10 +35,10 @@ while T > finalT                             % 模拟退火过程
        u = new(1); v = new(2);
                                              % 计算目标函数值的增量
        df = d(path(u-1),path(v)) + d(path(u),path(v+1)) - d(path(u-1),path(u)) - d(path(v),path(v+1));
-       if df < 0                             % 接受准则
+       if df < 0                             % 接受新解
            path = [path(1:u-1), path(v:-1:u), path(v+1:n)];
            y = y + df;
-       elseif exp(-df / K * T) > rand
+       elseif exp(-df / K * T) > rand        % 依概率接受
            path = [path(1:u-1), path(v:-1:u), path(v+1:n)];
            y = y + df;
        end
