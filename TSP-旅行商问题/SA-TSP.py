@@ -7,9 +7,10 @@ pos_x = [1, 3, 6, 12, 19, 22, 23, 20, 21, 22.5, 40, 44, 42, 36, 39, 58, 62, 88, 
          58, 80, 1]
 pos_y = [99, 50, 64, 40, 41, 42, 37, 54, 60, 60.5, 26, 20, 35, 83, 95, 33, 30.5, 6, 38, 44, 42, 57, 59, 62, 65, 74, 70,
          77, 68, 66, 99]
+
 n = len(pos_x)
 d = rand(n, n)
-for i in range(n):
+for i in range(n): # 计算距离
     for j in range(n):
         x1, y1 = pos_x[i], pos_y[i]
         x2, y2 = pos_x[j], pos_y[j]
@@ -19,7 +20,7 @@ y, path = 0x3f3f3f3f, None
 
 
 def MonteCarlo():
-    ''' 产生较好初始解 '''
+    ''' 采用 Monte Carlo Algorithm 产生较好初始解 '''
     global y, path
     for _ in range(1000):
         path0 = permutation(n - 2)
@@ -73,6 +74,7 @@ if __name__ == '__main__':
         xx.append(pos_x[idx])
         yy.append(pos_y[idx])
     plt.plot(xx, yy, marker='>', mec='r', mfc='w', label="TSP-SA")
+    plt.scatter(xx[0], yy[0], c='g', s=100)
     plt.show()
 
 '''
