@@ -119,7 +119,7 @@ class GM_11:
 
 
     def ode(self, t, coef):
-        ''' 根据参数coef利用MATLAB求解常微分方程
+        ''' 根据参数coef利用MATLAB求解常微分方程边值问题
         x'' + a1*x' + a2*x = b
         x(0)=v1, x(n-1)=v2
         的解析解
