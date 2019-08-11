@@ -61,7 +61,7 @@ class GM_11:
         return res
 
 
-    def __pso(self, bnds=[(0, 100), (0, 100)]):
+    def __pso(self, bnds=[(-100, 100), (-100, 100)]):
         ''' Particle Swarm Optimize Algorithm '''
         n = 2  # demensions 维数
         N, niter = 50, 500
@@ -101,14 +101,14 @@ class GM_11:
         return gbest_x
 
 
-    def __dual_annel(self, bnds=[(0, 100), (0, 100)]):
+    def __dual_annel(self, bnds=[(-100, 100), (-100, 100)]):
         ''' dual annealing algorithm '''
         ans = DA(func=self.f, bounds=bnds, maxiter=1000, seed=623)
         print("Global Coef = {0}, Cost = {1:.6f}".format(ans.x, ans.fun))
         return ans.x
 
 
-    def __diff_evol(self, bnds=[(0, 100), (0, 100)]):
+    def __diff_evol(self, bnds=[(-100, 100), (-100, 100)]):
         ''' differential evolution algorithm '''
         ans = DE(func=self.f, bounds=bnds, maxiter=1000, popsize=25,
                     mutation=(0.5, 1), recombination=0.7, tol=0.001)
