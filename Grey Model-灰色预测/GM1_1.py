@@ -62,7 +62,7 @@ class GM_11:
 
 
     def __pso(self, bnds=[(0, 100), (0, 100)]):
-        ''' Particle Swarm Algorithm '''
+        ''' Particle Swarm Optimize Algorithm '''
         n = 2  # demensions 维数
         N, niter = 50, 500
         vmin, vmax = -1, 1
