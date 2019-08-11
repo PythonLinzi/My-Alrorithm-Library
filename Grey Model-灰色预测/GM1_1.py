@@ -123,6 +123,7 @@ class GM_11:
         #a, b = self.__dual_annel()  # 采用双适应度模拟退火算法拟合参数
         a, b = self.__diff_evol() # 采用差分进化算法拟合参数
         err = zeros(shape=self.x0.shape).astype(np.float)  # 残差
+        err1 = err.copy()  # 相对误差
         lambda_ = array([0 for _ in range(self.n)]).astype(np.float) # 级比
         rho = lambda_.copy() # 级比偏差
         for i in range(0, self.m):
@@ -131,22 +132,15 @@ class GM_11:
         for i in range(1, self.m):
             self.x0_p[i] = self.x1_p[i] - self.x1_p[i - 1]
         for i in range(1, self.n):
-            err[i] = abs((self.x0[i] - self.x0_p[i]) / self.x0[i])
+            err[i] = abs(self.x0[i] - self.x0_p[i])
+            err1[i] = abs((self.x0[i] - self.x0_p[i]) / self.x0[i])
             lambda_[i] = self.x0[i - 1] / self.x0[i]
             rho[i] = 1 - (1 - 0.5 * a) * lambda_[i] / (1 + 0.5 * a)
         # 残差检验
+        print("相对误差: ", err1)
         print("残差Error", err)
-        if err.all() < 0.1:
-            print("残差检验达到较高要求(<0.1)")
-        elif err.all() < 0.2:
-            print("残差检验通过一般要求(<0.2)")
-        # 级比检验
         print("级比Lambda:", lambda_)
         print("级比偏差Rho:", rho)
-        if rho.all() < 0.1:
-            print("级比偏差检验达到较高要求(<0.1)")
-        elif rho.all() < 0.2:
-            print("级比偏差检验通过一般要求(<0.2)")
         print("******原始数据为******")
         print(self.x0)
         print("******预测为******")
@@ -157,7 +151,7 @@ class GM_11:
 
 # demo1
 data = [71.1, 72.4, 72.4, 72.1, 71.4, 72.0, 71.6]
-gm11 = GM_11(data=data)
+gm11 = GM_11(data=data, nxt=4)
 gm11.run()
 
 
