@@ -136,19 +136,17 @@ class GM_11:
         coef = self.__diff_evol() # 采用差分进化算法拟合参数
         '''计算得到参数后使用MATLAB求解白化的二阶常微分方程'''
         err = zeros(shape=self.x0.shape).astype(np.float)  # 残差
+        err1 = err.copy() # 相对误差
         for i in range(0, self.m):
             tmp = self.ode(i, coef)
             self.x1_p[i] = tmp
         for i in range(1, self.m):
             self.x0_p[i] = self.x1_p[i] - self.x1_p[i - 1]
         for i in range(1, self.n):
-            err[i] = abs((self.x0[i] - self.x0_p[i]) / self.x0[i])
-        # 残差检验
+            err[i] = abs(self.x0[i] - self.x0_p[i])
+            err1[i] = abs((self.x0[i] - self.x0_p[i]) / self.x0[i])
+        print("相对误差: ", err1)
         print("残差Error", err)
-        if err.all() < 0.1:
-            print("残差检验达到较高要求(<0.1)")
-        elif err.all() < 0.2:
-            print("残差检验通过一般要求(<0.2)")
         print("******原始数据为******")
         print(self.x0)
         print("******预测为******")
