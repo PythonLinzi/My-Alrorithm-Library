@@ -12,9 +12,9 @@ path = [];                                   % 巡航路径
 y = inf;                                     % 初始化距离
 rand('state', sum(clock));                   % 随机数生成器初始化
 for j = 1:1000                               % Monte Carlo求较好的初始解
-    path0 = [1 1 + randperm(n - 2), n];
+    path0 = [1 1 + randperm(n - 2) 1, n];
     tmp = 0;
-    for i = 1:n-1
+    for i = 1:n
         tmp = tmp + d(path0(i), path0(i+1));
     end
     if tmp < y
@@ -62,7 +62,8 @@ fprintf('巡航距离 = %f\n', bestY);            % 打印路径长度
 xx = pos_X(bestPath); 
 yy = pos_Y(bestPath);
 plot(xx, yy, '->');                          % 绘制巡航路径
+grid on;
 
-% path = [1 15 14 24 29 27 28 26 25 30 23 22 21 20 19 18 17 
-%     16 12 11 13 7 6 5 4 2 8 10 9 3 31]
-% y = 426.3058
+%巡航路线 = 1 3 9 10 8 2 4 5 6 7 13 11 12 16 17 21 18 19 20 25 30 26 28 27 22 23 29 24 14 15 1
+%巡航距离 = 433.274639
+
