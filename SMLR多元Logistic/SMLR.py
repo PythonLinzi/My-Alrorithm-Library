@@ -388,11 +388,9 @@ class SMLR(BaseEstimator, ClassifierMixin):
 
 ''' demo '''
 # Prepare classifier objects
-svm = sklearn.svm.LinearSVC()
 smlr = SMLR(max_iter=1000, tol=1e-5, verbose=1)
 
 # Sample data generation
-
 # Num of samples
 N = 100
 
@@ -412,7 +410,6 @@ feature4test = numpy.vstack(((
     numpy.dot(numpy.ones((N, 1)), [feature4class2]))))
 
 numpy.random.seed(seed=1)
-
 feature4training += 0.5 * numpy.random.randn(*feature4training.shape)
 feature4test += 0.5 * numpy.random.randn(*feature4test.shape)
 
@@ -429,13 +426,13 @@ plt.xlabel("Dimension 1")
 plt.ylabel("Dimension 2")
 plt.xlim(-3, 3)
 plt.ylim(-3, 3)
+plt.grid()
 plt.show()
 
-# SMLR & SVM training
+# SMLR training
 print("SMLR learning")
 smlr.fit(feature4training, label4training)
-print("SVM learning")
-svm.fit(feature4training, label4training)
+
 
 print("The SLMR weights obtained")
 print(numpy.transpose(smlr.coef_))
@@ -457,19 +454,11 @@ y = (-w[-1] - x * w[0]) / w[1]
 plt.plot(x, y, color='black')
 plt.xlim(-3, 3)
 plt.ylim(-3, 3)
+plt.grid()
 plt.show()
 
 # generalization test
-predictedLabelBySVM = svm.predict(feature4test)
 predictedLabelBySMLR = smlr.predict(feature4test)
-
-num_correct = 0
-for n in range(len(label4test)):
-    if label4test[n] == predictedLabelBySVM[n]:
-        num_correct += 1
-
-svm_accuracy = numpy.double(num_correct) / len(label4test) * 100
-
 num_correct = 0
 for n in range(len(label4test)):
     if label4test[n] == predictedLabelBySMLR[n]:
@@ -477,6 +466,5 @@ for n in range(len(label4test)):
 
 smlr_accuracy = numpy.double(num_correct) / len(label4test) * 100
 
-print("SVM accuracy: %s" % (svm_accuracy))
 print("SMLR accuracy: %s" % (smlr_accuracy))
 
