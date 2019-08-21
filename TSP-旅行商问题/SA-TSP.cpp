@@ -17,6 +17,7 @@ vector<int> tmp;
 
 double myrand(){ return rand() / double(RAND_MAX);}
 
+
 void init(){
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
@@ -29,11 +30,12 @@ void init(){
 
 void MonteCarlo(){ // 采用蒙特卡洛算法求一个较好初值
     for(int l = 0; l < n; ++l){tmp.push_back(l);}
+    tmp.push_back(0);
     for(int i = 0; i < 1000; ++i){
         random_shuffle(tmp.begin() + 1, tmp.end() - 1);
         for(int j = 0; j < n; ++j){p0[j] = tmp[j];}
         dis0 = 0;
-        for(int j = 0; j < n - 1; ++j){
+        for(int j = 0; j < n; ++j){
             dis0 += d[p0[j]][p0[j + 1]];
         }
         if(dis0 < dis){
@@ -75,8 +77,8 @@ void SA(){ // Simulated Annealing
         T *= coef;
     }
     cout << "Path: ";
-    for(int i = 0; i < n; ++i){
-        cout << p[i] << (i == n-1?"\n":" ");
+    for(int i = 0; i < n + 1; ++i){
+        cout << p[i] << (i == n?"\n":" ");
     }
     cout << "Minimum Distance = " << dis << endl;
     return;
@@ -98,7 +100,7 @@ int main()
 }
 
 /*
- * Path: 0 2 8 9 7 1 3 4 5 6 12 10 11 15 16 17 18 19 20 21 22 29 24 25 27 26 28 23 13 14 30
- * Minimum Distance = 426.306
- * Running Time: 1s
+ * Path: 0 2 9 8 7 1 3 4 5 6 12 10 11 15 16 20 17 18 19 24 29 25 27 26 21 22 28 23 13 14 30 0
+ * Minimum Distance = 433.736
+ * Running Time: 0s
  */
