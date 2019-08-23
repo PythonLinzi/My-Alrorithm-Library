@@ -1,15 +1,14 @@
-"""
-SMLR (sparse multinomial logistic regression)
-"""
-
-from __future__ import print_function
-import numpy
-import scipy
-import scipy.optimize
-from sklearn.base import BaseEstimator
+import numpy as np
+from numpy import vstack, ones, zeros, delete
+from numpy import unique, hstack, where
+from numpy import transpose, exp, dot
+from numpy import newaxis, argmax, linalg
+from numpy import array, log, nonzero
+from numpy import squeeze, diag, kron, sum, all
 from sklearn.base import ClassifierMixin
-import sklearn.svm
+from sklearn.base import BaseEstimator
 import matplotlib.pyplot as plt
+from scipy.optimize import minimize
 
 
 class SMLR(BaseEstimator, ClassifierMixin):
@@ -63,7 +62,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
         # use 0,1,2,...,(C-1) to indicate classes
 
         # Check # of features, # of dimensions, and # of classes
-        self.classes_, indices = numpy.unique(label, return_inverse=True)
+        self.classes_, indices = unique(label, return_inverse=True)
         N = feature.shape[0]
         D = feature.shape[1]
         # C=numpy.max(label)+1
@@ -74,21 +73,21 @@ class SMLR(BaseEstimator, ClassifierMixin):
         label = indices
 
         # make class label based on 1-of-K representation
-        label_1ofK = numpy.zeros((N, C))
+        label_1ofK = zeros((N, C))
         for n in range(N):
             label_1ofK[n, label[n]] = 1
 
         # add a bias term to feature
-        feature = numpy.hstack((feature, numpy.ones((N, 1))))
+        feature = hstack((feature, ones((N, 1))))
         D += 1
 
         # set initial values of theta (wieghts) and
         # alpha (relavence parameters)
-        theta = numpy.zeros((D, C))
-        alpha = numpy.ones((D, C))
-        isEffective = numpy.ones((D, C))
+        theta = zeros((D, C))
+        alpha = ones((D, C))
+        isEffective = ones((D, C))
         effectiveFeature = range(D)
-        num_effectiveWeights = numpy.sum(isEffective)
+        num_effectiveWeights = sum(isEffective)
 
         # Variational baysian method (see Yamashita et al., 2008)
         for iteration in range(self.max_iter):
@@ -109,22 +108,21 @@ class SMLR(BaseEstimator, ClassifierMixin):
                 alpha, newThetaParam['mu'], newThetaParam['var'], isEffective)
 
             # pruning of irrelevant dimensions (that have large alpha values)
-            isEffective = numpy.ones(theta.shape)
+            isEffective = ones(theta.shape)
             isEffective[alpha > 1e+3] = 0
             theta[alpha > 1e+3] = 0
 
-            dim_excluded = numpy.where(numpy.all(isEffective == 0, axis=1))
-            theta = numpy.delete(theta, dim_excluded, axis=0)
-            alpha = numpy.delete(alpha, dim_excluded, axis=0)
-            feature = numpy.delete(feature, dim_excluded, axis=1)
-            isEffective = numpy.delete(isEffective, dim_excluded, axis=0)
-            effectiveFeature = numpy.delete(
-                effectiveFeature, dim_excluded, axis=0)
+            dim_excluded = where(all(isEffective == 0, axis=1))
+            theta = delete(theta, dim_excluded, axis=0)
+            alpha = delete(alpha, dim_excluded, axis=0)
+            feature = delete(feature, dim_excluded, axis=1)
+            isEffective = delete(isEffective, dim_excluded, axis=0)
+            effectiveFeature = delete(effectiveFeature, dim_excluded, axis=0)
 
             # show progress
             if self.verbose:
-                if not num_effectiveWeights == numpy.sum(isEffective):
-                    num_effectiveWeights = numpy.sum(isEffective)
+                if not num_effectiveWeights == sum(isEffective):
+                    num_effectiveWeights = sum(isEffective)
                     print("# of iterations: %d,  # of effective dimensions: %d"
                           % (iteration + 1, len(effectiveFeature)))
                     print("# of iterations: %d,  FuncValue: %f"
@@ -132,11 +130,11 @@ class SMLR(BaseEstimator, ClassifierMixin):
             if iteration > 1 and abs(funcValue - funcValue_pre) < self.tol:
                 break
 
-        temporal_theta = numpy.zeros((D, C))
+        temporal_theta = zeros((D, C))
         temporal_theta[effectiveFeature, :] = theta
         theta = temporal_theta
 
-        self.coef_ = numpy.transpose(theta[:-1, :])
+        self.coef_ = transpose(theta[:-1, :])
         self.intercept_ = theta[-1, :]
         return self
 
@@ -157,23 +155,23 @@ class SMLR(BaseEstimator, ClassifierMixin):
         """
 
         # add a bias term to feature
-        feature = numpy.hstack((feature, numpy.ones((feature.shape[0], 1))))
+        feature = hstack((feature, ones((feature.shape[0], 1))))
 
         # load weights
-        w = numpy.vstack((numpy.transpose(self.coef_), self.intercept_))
+        w = vstack((transpose(self.coef_), self.intercept_))
 
         # predictive probability calculation
-        p = numpy.exp(feature.dot(w))
-        p /= p.sum(axis=1)[:, numpy.newaxis]
-        predicted_label = self.classes_[numpy.argmax(p, axis=1)]
-        return numpy.array(predicted_label)
+        p = exp(feature.dot(w))
+        p /= p.sum(axis=1)[:, newaxis]
+        predicted_label = self.classes_[argmax(p, axis=1)]
+        return array(predicted_label)
 
     def decision_function(self, feature):
         # add a bias term to feature
-        feature = numpy.hstack((feature, numpy.ones((feature.shape[0], 1))))
+        feature = hstack((feature, ones((feature.shape[0], 1))))
 
         # load weights
-        w = numpy.vstack((numpy.transpose(self.coef_), self.intercept_))
+        w = vstack((transpose(self.coef_), self.intercept_))
 
         return feature.dot(w)
 
@@ -194,14 +192,14 @@ class SMLR(BaseEstimator, ClassifierMixin):
         """
 
         # add a bias term to feature
-        feature = numpy.hstack((feature, numpy.ones((feature.shape[0], 1))))
+        feature = hstack((feature, ones((feature.shape[0], 1))))
 
         # load weights
-        w = numpy.vstack((numpy.transpose(self.coef_), self.intercept_))
+        w = vstack((transpose(self.coef_), self.intercept_))
 
         # predictive probability calculation
-        p = numpy.exp(feature.dot(w))
-        p /= p.sum(axis=1)[:, numpy.newaxis]
+        p = exp(feature.dot(w))
+        p /= p.sum(axis=1)[:, newaxis]
         return p
 
     def predict_log_proba(self, feature):
@@ -220,7 +218,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
                 ``self.classes_``.
         """
         p = self.predict_proba(feature)
-        return numpy.log(p)
+        return log(p)
 
     def __thetaStep(self, theta, alpha, Y, X, isEffective):
         # chack # of dimensions, # of samples, and # of classes
@@ -244,7 +242,7 @@ class SMLR(BaseEstimator, ClassifierMixin):
             if len(theta_concatenated) != len(FeatureNum_effectiveWeight):
                 raise ValueError("The size of theta_concatenated is wrong")
 
-            theta_original = numpy.zeros((D, C))
+            theta_original = zeros((D, C))
             for index_effective_weight in range(len(FeatureNum_effectiveWeight)):
                 theta_original[
                     FeatureNum_effectiveWeight[index_effective_weight],
@@ -267,9 +265,9 @@ class SMLR(BaseEstimator, ClassifierMixin):
                 theta_originalShape, alpha, Y, X)
 
             # ignore the dimensions that have large alphas
-            dim_ignored = isEffective.ravel(order='F')[:, numpy.newaxis]
-            dim_ignored = numpy.nonzero(1 - dim_ignored)
-            gradE_used = numpy.delete(gradE_originalShape, dim_ignored[0])
+            dim_ignored = isEffective.ravel(order='F')[:, newaxis]
+            dim_ignored = nonzero(1 - dim_ignored)
+            gradE_used = delete(gradE_originalShape, dim_ignored[0])
             return -gradE_used
 
         # set the Hessian for Newton-CG based optimization
@@ -280,30 +278,29 @@ class SMLR(BaseEstimator, ClassifierMixin):
                 theta_originalShape, alpha, Y, X)
 
             # ignore the dimensions that have large alphas
-            dim_ignored = isEffective.ravel(order='F')[:, numpy.newaxis]
-            dim_ignored = numpy.nonzero(1 - dim_ignored)
-            HessE_used = numpy.delete(HessE_originalShape, dim_ignored[0], axis=0)
-            HessE_used = numpy.delete(HessE_used, dim_ignored[0], axis=1)
+            dim_ignored = isEffective.ravel(order='F')[:, newaxis]
+            dim_ignored = nonzero(1 - dim_ignored)
+            HessE_used = delete(HessE_originalShape, dim_ignored[0], axis=0)
+            HessE_used = delete(HessE_used, dim_ignored[0], axis=1)
             return -HessE_used
 
         # set the initial value for optimization. we use the current theta for
         # this.
-        x0 = theta.ravel(order='F')[:, numpy.newaxis]
-        dim_ignored = isEffective.ravel(order='F')[:, numpy.newaxis]
-        dim_ignored = numpy.nonzero(1 - dim_ignored)
-        x0 = numpy.delete(x0, dim_ignored[0])
+        x0 = theta.ravel(order='F')[:, newaxis]
+        dim_ignored = isEffective.ravel(order='F')[:, newaxis]
+        dim_ignored = nonzero(1 - dim_ignored)
+        x0 = delete(x0, dim_ignored[0])
 
         # Optimization of theta (weight paramter) with scipy.optimize.minimize
-        res = scipy.optimize.minimize(
-            func2minimize, x0, method='Newton-CG',
-            jac=grad2minimize, hess=Hess2minimize, tol=1e-3)
+        res = minimize(func2minimize, x0, method='Newton-CG',
+                       jac=grad2minimize, hess=Hess2minimize, tol=1e-3)
         mu = thetaConcatenated2thetaOriginalShape(res['x'])
 
         # The covariance matrix of the posterior distribution
-        cov = numpy.linalg.inv(Hess2minimize(res['x']))
+        cov = linalg.inv(Hess2minimize(res['x']))
 
         # The diagonal elements of the above covariance matrix
-        var = numpy.diag(cov)
+        var = diag(cov)
         var = thetaConcatenated2thetaOriginalShape(var)
 
         param = {'mu': mu, 'var': var, 'funcValue': res['fun']}
@@ -328,10 +325,10 @@ class SMLR(BaseEstimator, ClassifierMixin):
         # output: log likelihood function of theta (averaged over alpha)
 
         linearSum = X.dot(theta)
-        fone = numpy.sum(Y * linearSum, axis=1) - \
-            numpy.log(numpy.sum(numpy.exp(linearSum), axis=1))
-        E = numpy.sum(fone) - (0.5) * numpy.sum(theta.ravel(order='F') *
-                                                alpha.ravel(order='F') ** 2)
+        fone = sum(Y * linearSum, axis=1) - \
+               log(sum(exp(linearSum), axis=1))
+        E = sum(fone) - (0.5) * sum(theta.ravel(order='F') *
+                                    alpha.ravel(order='F') ** 2)
         return E
 
     def __gradE(self, theta, alpha, Y, X):
@@ -344,19 +341,18 @@ class SMLR(BaseEstimator, ClassifierMixin):
         D = X.shape[1]
         C = Y.shape[1]
 
-        dE = numpy.zeros((theta.shape[0] * theta.shape[1], 1))
-        linearSumExponential = numpy.exp(X.dot(theta))
-        p = linearSumExponential / numpy.sum(
-            linearSumExponential, axis=1)[:, numpy.newaxis]
+        dE = zeros((theta.shape[0] * theta.shape[1], 1))
+        linearSumExponential = exp(X.dot(theta))
+        p = linearSumExponential / sum(linearSumExponential, axis=1)[:, newaxis]
 
         for c in range(C):
-            temporal_dE = numpy.sum(
-                (Y[:, c] - p[:, c]) * X.T, axis=1)[:, numpy.newaxis]
-            A = numpy.diag(alpha[:, c])
-            temporal_dE -= numpy.transpose([numpy.dot(A, theta[:, c])])
-            dE[c * D:((c + 1) * D), 0] = numpy.squeeze(temporal_dE)
+            temporal_dE = sum(
+                (Y[:, c] - p[:, c]) * X.T, axis=1)[:, newaxis]
+            A = diag(alpha[:, c])
+            temporal_dE -= transpose([dot(A, theta[:, c])])
+            dE[c * D:((c + 1) * D), 0] = squeeze(temporal_dE)
 
-        return numpy.squeeze(dE)
+        return squeeze(dE)
 
     def __HessE(self, theta, alpha, Y, X):
         # theta: weights for classification, dimensions by # of classes
@@ -369,102 +365,82 @@ class SMLR(BaseEstimator, ClassifierMixin):
         D = X.shape[1]
         C = Y.shape[1]
 
-        linearSumExponential = numpy.exp(X.dot(theta))
-        p = linearSumExponential / numpy.sum(
-            linearSumExponential, axis=1)[:, numpy.newaxis]
-        H = numpy.zeros((C * D, C * D))
+        linearSumExponential = exp(X.dot(theta))
+        p = linearSumExponential / sum(
+            linearSumExponential, axis=1)[:, newaxis]
+        H = zeros((C * D, C * D))
 
         for n in range(N):
-            M1 = numpy.diag(p[n, :])
-            M2 = numpy.dot(numpy.transpose([p[n, :]]), [p[n, :]])
-            M3 = numpy.dot(numpy.transpose([X[n, :]]), [X[n, :]])
-            H = H - numpy.kron(M1 - M2, M3)
-        H = H - numpy.diag(alpha.ravel(order='F'))
+            M1 = diag(p[n, :])
+            M2 = dot(transpose([p[n, :]]), [p[n, :]])
+            M3 = dot(transpose([X[n, :]]), [X[n, :]])
+            H = H - kron(M1 - M2, M3)
+        H = H - diag(alpha.ravel(order='F'))
         # Derivation came from Yamashita et al., Nuroimage,2008., but
         # exactly speaking, the last term is modified.
         # The above is consistent with SLR toolbox (MATLAB-based implementation by
         # Yamashita-san) rather than the paper.
         return H
 
-''' demo '''
-# Prepare classifier objects
-smlr = SMLR(max_iter=1000, tol=1e-5, verbose=1)
 
-# Sample data generation
-# Num of samples
-N = 100
-
-# Label vector
-label4training = numpy.vstack((numpy.zeros((N, 1)), numpy.ones((N, 1))))
-label4test = numpy.vstack((numpy.zeros((N, 1)), numpy.ones((N, 1))))
-
-# Features
-feature4class1 = numpy.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-feature4class2 = numpy.array([-1, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-
-feature4training = numpy.vstack(((
-    numpy.dot(numpy.ones((N, 1)), [feature4class1]),
-    numpy.dot(numpy.ones((N, 1)), [feature4class2]))))
-feature4test = numpy.vstack(((
-    numpy.dot(numpy.ones((N, 1)), [feature4class1]),
-    numpy.dot(numpy.ones((N, 1)), [feature4class2]))))
-
-numpy.random.seed(seed=1)
-feature4training += 0.5 * numpy.random.randn(*feature4training.shape)
-feature4test += 0.5 * numpy.random.randn(*feature4test.shape)
-
-# Scatter plot in the feature space
-for n in range(len(label4training)):
-    if label4training[n] == 0:
-        plt.scatter(
-            feature4training[n, 0], feature4training[n, 1], color='red')
-    else:
-        plt.scatter(
-            feature4training[n, 0], feature4training[n, 1], color='blue')
-
-plt.xlabel("Dimension 1")
-plt.ylabel("Dimension 2")
-plt.xlim(-3, 3)
-plt.ylim(-3, 3)
-plt.grid()
-plt.show()
-
-# SMLR training
-print("SMLR learning")
-smlr.fit(feature4training, label4training)
+if __name__ == '__main__':
+    ''' demo '''
 
 
-print("The SLMR weights obtained")
-print(numpy.transpose(smlr.coef_))
+    def demo_data():
+        # Num of samples
+        N = 100
+        # Label vector
+        label4training = vstack((zeros((N, 1)), ones((N, 1))))
+        label4test = vstack((zeros((N, 1)), ones((N, 1))))
+        # Featuret
+        feature4class1 = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        feature4class2 = np.array([-1, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        feature4training = vstack(((
+            dot(ones((N, 1)), [feature4class1]),
+            dot(ones((N, 1)), [feature4class2]))))
+        feature4test = vstack(((
+            dot(ones((N, 1)), [feature4class1]),
+            dot(ones((N, 1)), [feature4class2]))))
+        np.random.seed(seed=1)
+        feature4training += 0.5 * np.random.randn(*feature4training.shape)
+        feature4test += 0.5 * np.random.randn(*feature4test.shape)
+        X, y = feature4training, label4training
+        TestX, Testy = feature4test, label4test
+        return X, y, TestX, Testy
 
-# Linear boundary in the feature space
-for n in range(len(label4training)):
-    if label4training[n] == 0:
-        plt.scatter(
-            feature4training[n, 0], feature4training[n, 1], color='red')
-    else:
-        plt.scatter(
-            feature4training[n, 0], feature4training[n, 1], color='blue')
 
-plt.xlabel("Dimension 1")
-plt.ylabel("Dimension 2")
-w = smlr.coef_[0, :]
-x = numpy.arange(-5, 5, 0.001)
-y = (-w[-1] - x * w[0]) / w[1]
-plt.plot(x, y, color='black')
-plt.xlim(-3, 3)
-plt.ylim(-3, 3)
-plt.grid()
-plt.show()
+    X, y, TestX, Testy = demo_data()
+    # Prepare classifier objects
+    smlr = SMLR(max_iter=1000, tol=1e-5, verbose=1)
+    print("SMLR learning")
+    smlr.fit(X, y)
+    print("The SLMR weights obtained")
+    print(transpose(smlr.coef_))  # 最后一位对应常数项
 
-# generalization test
-predictedLabelBySMLR = smlr.predict(feature4test)
-num_correct = 0
-for n in range(len(label4test)):
-    if label4test[n] == predictedLabelBySMLR[n]:
-        num_correct += 1
+    # Linear boundary in the feature space
+    for n in range(len(X)):
+        if y[n] == 0:
+            plt.scatter(X[n, 0], X[n, 1], color='r')
+        else:
+            plt.scatter(X[n, 0], X[n, 1], color='b')
+    plt.xlabel("Dimension 1")
+    plt.ylabel("Dimension 2")
+    w = smlr.coef_[0, :]
+    x = np.arange(-5, 5, 0.001)
+    y = (-w[-1] - x * w[0]) / w[1]
+    plt.plot(x, y, color='black')
+    plt.xlim(-3, 3)
+    plt.ylim(-3, 3)
+    plt.grid()
+    plt.show()
 
-smlr_accuracy = numpy.double(num_correct) / len(label4test) * 100
-
-print("SMLR accuracy: %s" % (smlr_accuracy))
+    # generalization test
+    PredsLabel = smlr.predict(TestX)
+    cnt_correct = 0
+    for i in range(len(Testy)):
+        if Testy[i] == PredsLabel[i]:
+            cnt_correct += 1
+    accuracy = np.double(cnt_correct) / len(Testy) * 100
+    print("SMLR accuracy: %s" % (accuracy))
 
