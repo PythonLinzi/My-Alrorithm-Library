@@ -64,6 +64,7 @@ class LogitRegression:
             out_err = label - preds
             grad = dot(features.T, out_err)
             w += grad * rate
+        print("Global Best Wights =", w)
         return w
 
 
@@ -78,7 +79,7 @@ class LogitRegression:
         bnd = self.bnd
         bnds = [bnd] * m
         res = DA(func=func, bounds=bnds, maxiter=niter, seed=623)
-        s1 = "Global Best Wights = {0}, "
+        s1 = "Global Best Wights = {0}\n"
         s2 = "Log-likehood(weight) = {1:.6f}"
         show = s1 + s2
         print(show.format(res.x, res.fun))
@@ -98,7 +99,7 @@ class LogitRegression:
         bnds = [bnd] * m
         res = DE(func=func, bounds=bnds, maxiter=niter, popsize=25,
                  tol=0.01, mutation=(0.5, 1), recombination=0.7)
-        s1 = "Global Best Wights = {0}, "
+        s1 = "Global Best Wights = {0}\n"
         s2 = "Log-likehood(weight) = {1:.6f}"
         show = s1 + s2
         print(show.format(res.x, res.fun))
@@ -113,7 +114,7 @@ class LogitRegression:
         :param niter: int, the number of iterations in training(default 1k)
         :return w: array-like, shape = [n_features + 1], weights
         '''
-        n = 3  # demensions 维数
+        n = self.m + 1  # demensions 维数
         N = 50
         vmin, vmax = -1, 1
         w, c1, c2 = 1, 2, 2.1
@@ -137,7 +138,7 @@ class LogitRegression:
                     pbest_x[i], pbest_y[i] = x[i], y[i]
                 if y[i] < gbest_y:
                     gbest_x, gbest_y = x[i], y[i]
-        s1 = "Global Best Wights = {0}, "
+        s1 = "Global Best Wights = {0}\n"
         s2 = "Log-likehood(weight) = {1:.6f}"
         show = s1 + s2
         print(show.format(gbest_x, gbest_y))
@@ -213,6 +214,8 @@ class LogitRegression:
         :param w: weights
         :return:
         '''
+        print()
+        print('------------- Classfication Function -------------')
         WX = str(w[0])
         for i in range(1, self.m + 1):
             if w[i] > 0:
@@ -222,6 +225,7 @@ class LogitRegression:
             else:
                 continue
         print("y = 1 / (1 + exp(-(" + WX + ")))")
+        print()
         return
 
 
@@ -235,8 +239,6 @@ class LogitRegression:
         w = self.weight
         f = features
         label = label
-        if reg:
-            print("Logistic Regression Weights : ", w)
         n = features.shape[0]
         one = ones((n, 1))
         tmp = hstack((one, f))
@@ -279,6 +281,7 @@ class LogitRegression:
             plt.grid()
             plt.show()
         return
+
 
 
 
@@ -326,10 +329,10 @@ if __name__ == '__main__':
         return X, y, TestX, Testy
 
     #X, y, TestX, Testy = demo1_data()
-    X, y, TestX, Testy = demo2_data()
-    #X, y, TestX, Testy = demo3_data()
+    #X, y, TestX, Testy = demo2_data()
+    X, y, TestX, Testy = demo3_data()
     demo3_data()
     logit = LogitRegression(X, y)
-    weights = logit.train(method='DA', niter=500)
+    weights = logit.train(method='PSO', niter=200)
     logit.predict(TestX, Testy)
 
