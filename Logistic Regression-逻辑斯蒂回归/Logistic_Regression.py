@@ -282,7 +282,6 @@ class LogitRegression:
 
 
 
-# demo1
 if __name__ == '__main__':
     def demo1_data():
         np.random.seed(12)
