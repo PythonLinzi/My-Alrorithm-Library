@@ -328,10 +328,9 @@ if __name__ == '__main__':
         TestX, Testy = feature4test, label4test.flatten()
         return X, y, TestX, Testy
 
-    #X, y, TestX, Testy = demo1_data()
+    X, y, TestX, Testy = demo1_data()
     #X, y, TestX, Testy = demo2_data()
-    X, y, TestX, Testy = demo3_data()
-    demo3_data()
+    #X, y, TestX, Testy = demo3_data()
     logit = LogitRegression(X, y)
     weights = logit.train(method='PSO', niter=200)
     logit.predict(TestX, Testy)
