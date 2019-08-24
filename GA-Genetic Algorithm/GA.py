@@ -26,8 +26,8 @@ class GA():
         self.tol = tol # 精度 precision
         self.lb = bnd[0]
         self.ub = bnd[1]
-        u_b = bnd[1] - bnd[0]
-        self.Dna_Len = int(log2(u_b / tol)) + 1
+        self.u_b = bnd[1] - bnd[0]
+        self.Dna_Len = int(log2(self.u_b / tol)) + 1
         n, m = self.size, self.Dna_Len
         self.pop = randint(0,2,size=(n, m))
         self.dot2 = 2 ** arange(self.Dna_Len)[::-1]
@@ -43,7 +43,9 @@ class GA():
     def __Bin2Dec(self, pop):
         '''convert binary DNA to decimal and normalize it to a range(xbound)'''
         M = float(2 ** self.Dna_Len)
-        return pop.dot(self.dot2) / M * self.ub
+        ret = pop.dot(self.dot2) / M * self.u_b
+        ret += self.lb
+        return ret
 
     def __select(self, fitness):
         ''' nature selection '''
@@ -87,7 +89,9 @@ class GA():
         t4plot = [0]
         y4plot = [bestY]
         tx, ty = bestX, bestY
+        ss = 'iter = {0},  y = {1}'
         for i in range(niter):
+            print(ss.format(i + 1, bestY))
             X = self.__Bin2Dec(self.pop)
             Y = self.f(X)
             fit = self.__fitness(Y)
@@ -120,7 +124,7 @@ class GA():
         plt.scatter(x, y, marker='*', s=10)
         plt.grid()
         plt.title('Convergence Process')
-        plt.xlabel('X')
+        plt.xlabel('niter')
         plt.ylabel('y')
         plt.show()
 
