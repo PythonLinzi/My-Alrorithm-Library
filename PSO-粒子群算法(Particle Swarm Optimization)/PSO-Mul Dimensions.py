@@ -27,16 +27,21 @@ def Bounds(x:np.ndarray) -> np.ndarray:
 
 def f(x:np.ndarray):
     y, bnds = target_func(x), Bounds(x)
-    penelty = 0x3f3f3f3f # 惩罚系数(可以适当调整)
+    penelty = np.inf
     for value in bnds:
         if value > 0: # violation of constrains
             y += (penelty * value)
     return y
 
 
-def PSO():
-    n = 3 # demensions 维数
-    N, niter = 50, 500
+def PSO(dimensions=3):
+    '''
+    Particle Swarm Optimization
+    :param dimensions: int
+    :return:
+    '''
+    n = dimensions # dimensions 维数
+    N, niter = 20, 200
     vmin, vmax = -1, 1
     w, c1, c2 = 1, 2, 2.1
     c = c1 + c2
@@ -48,7 +53,9 @@ def PSO():
     for _ in range(niter):
         for i in range(N):
             for j in range(n):
-                v[i][j] = K * (v[i][j] + c1 * rand(1) * (pbest_x[i][j] - x[i][j]) + c2 * rand(1) * (gbest_x[j] - x[i][j]))
+                pb = c1 * rand(1) * (pbest_x[i][j] - x[i][j])
+                gb = c2 * rand(1) * (gbest_x[j] - x[i][j])
+                v[i][j] = K * (v[i][j] + pb + gb)
                 v[i][j] = min(v[i][j], vmax)
                 v[i][j] = max(v[i][j], vmin)
             x[i] += v[i]
@@ -57,15 +64,19 @@ def PSO():
                 pbest_x[i], pbest_y[i] = x[i], y[i]
             if y[i] < gbest_y:
                 gbest_x, gbest_y = x[i], y[i]
-    print("Global Minimum: xmin = {0}, f(xmin) = {1:.6f}".format(gbest_x, gbest_y))
+    s1 = "Global Minimum: xmin = {0}, "
+    s2 = "f(xmin) = {1:.6f}"
+    ss = s1 + s2
+    print(ss.format(gbest_x, gbest_y))
     return gbest_x, gbest_y
 
 
 from datetime import datetime
 s = datetime.now()
-PSO()
+X, y = PSO()
 e = datetime.now()
 print("Running Time:", e - s)
+print(Bounds(X) < 0) # 检查是否满足约束
 
 
 '''
