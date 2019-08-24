@@ -28,7 +28,8 @@ class GA():
         self.ub = bnd[1]
         u_b = bnd[1] - bnd[0]
         self.Dna_Len = int(log2(u_b / tol)) + 1
-        self.pop = randint(0,2,size=(self.size, self.Dna_Len))
+        n, m = self.size, self.Dna_Len
+        self.pop = randint(0,2,size=(n, m))
         self.dot2 = 2 ** arange(self.Dna_Len)[::-1]
 
     def __fitness(self, y):
