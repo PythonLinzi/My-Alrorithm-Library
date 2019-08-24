@@ -25,7 +25,7 @@ def Bounds(x:np.ndarray) -> np.ndarray:
 
 def f(x:np.ndarray):
     y, bnds = target_func(x), Bounds(x)
-    penelty = 0x3f3f3f3f # 惩罚系数(可以适当调整)
+    penelty = 1e30 # 惩罚系数
     for value in bnds:
         if value > 0: # violation of constrains
             y += (penelty * value)
@@ -33,7 +33,7 @@ def f(x:np.ndarray):
 
 
 def SA() -> float:
-    T, finalT, coef = 1000, 1, 0.96
+    T, finalT, coef = 1000, 1, 0.9
     K, step, niter = 1, 1, 1000
     x, ansX = rand(3), rand(3) # 注意X要在X的取值范围内随机投点
     ansY = f(ansX)
