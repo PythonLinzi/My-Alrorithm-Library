@@ -2,8 +2,7 @@ import numpy as np
 from numpy.random import rand, randint
 from numpy.random import choice
 from numpy import arange, log2, dot
-from numpy import argmax, argmin
-from numpy import max, min, array
+from numpy import argmin, array
 from numpy import ndarray, floor
 import matplotlib.pyplot as plt
 
