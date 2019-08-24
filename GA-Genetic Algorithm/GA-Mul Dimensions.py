@@ -18,7 +18,7 @@ class GA():
         :param mr: mutate_rate
         :param bnd: np.ndarray, bounds
         :param tol: tolerance
-        :param D: int, dimensions og vars
+        :param D: int, dimensions of vars
         '''
         self.f = f
         self.size = ps
@@ -124,8 +124,9 @@ class GA():
         t4plot = [0]
         y4plot = [bestY]
         tx, ty = bestX, bestY
+        ss = 'iter = {0},  y = {1}'
         for i in range(niter):
-            print('iter = {0}'.format(i + 1))
+            print(ss.format(i + 1, bestY))
             X = self.__Bin2Dec(self.pop)
             Y = self.__func(X)
             fit = self.__fitness(Y)
@@ -169,7 +170,7 @@ if __name__ == '__main__':
         return ret
 
 
-    ga = GA(f=f, ps=50, cr=0.8, mr=0.005, bnd=[-10, 10], tol=1e-3, D=3)
+    ga = GA(f=f, ps=50, cr=0.8, mr=0.05, bnd=[-10, 10], tol=1e-3, D=3)
     bestX, bestY = ga.compute(niter=200)
 
 '''
