@@ -76,10 +76,12 @@ s = datetime.now()
 X, y = PSO()
 e = datetime.now()
 print("Running Time:", e - s)
-print(Bounds(X) < 0) # 检查是否满足约束
+if np.all(Bounds(X) < 0) == True:
+    print("满足约束!") # 检查是否满足约束
 
 
 '''
-Global Minimum: xmin = [0.55216734 1.20325918 0.94782404], f(xmin) = 10.651092
-Running Time: 0:00:01.557554
+Global Minimum: xmin = [0.55215772 1.20330864 0.94786251], f(xmin) = 10.651273
+Running Time: 0:00:01.012293
+满足约束!
 '''
