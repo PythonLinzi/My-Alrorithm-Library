@@ -1,80 +1,134 @@
-"""遗传算法实现求函数极大值"""
 import numpy as np
+from numpy.random import rand, randint
+from numpy.random import choice
+from numpy import arange, log2
+from numpy import argmax, argmin
+from numpy import max, min
 import matplotlib.pyplot as plt
 
 
 class GA():
     '''genetic algorithm'''
-    def __init__(self,func, pop_size, cross_rate, mutate_rate, generation_n, bnds, tol):
-        self.f = func
-        self.size = pop_size
-        self.cross_rate = cross_rate
-        self.mutate_rate = mutate_rate
-        self.generations_n = generation_n
-        self.bnds = bnds # 取值范围
+    def __init__(self, f, ps, cr, mr, bnd, tol):
+        '''
+        :param f: Target Function
+        :param ps: int, population size
+        :param cr: cross_rate
+        :param mr: mutate_rate
+        :param bnd: bounds
+        :param tol: tolerance
+        '''
+        self.f = f
+        self.size = ps
+        self.cr = cr
+        self.mr = mr
+        self.bnds = bnd # 取值范围
         self.tol = tol # 精度 precision
-        self.DNA_length = int(np.log2((bnds[1] - bnds[0]) / tol)) + 1
-        self.DNA_length = 10
-        self.pop = np.random.randint(0,2,size=(self.size, self.DNA_length))
+        self.lb = bnd[0]
+        self.rb = bnd[1]
+        u_b = bnd[1] - bnd[0]
+        self.Dna_Len = int(log2(u_b / tol)) + 1
+        self.pop = randint(0,2,size=(self.size, self.Dna_Len))
+        self.dot2 = 2 ** arange(self.Dna_Len)[::-1]
 
-    def fitness(self,y): return y - np.min(y) + 1e-3  #find non-zero fitness for selection
+    def __fitness(self, y):
+        '''
+        Fitness Function for Minimal Problem
+        :param y: target y
+        :return: Fitness
+        '''
+        return max(y) - y + 1e-3
 
-    def binary_to_decimal(self, pop):
+    def __Bin2Dec(self, pop):
         '''convert binary DNA to decimal and normalize it to a range(xbound)'''
-        return pop.dot(2 ** np.arange(self.DNA_length)[::-1]) / float(2 ** self.DNA_length) * self.bnds[1]
+        return pop.dot(self.dot2) / float(2 ** self.Dna_Len) * self.bnds[1]
 
-    def select(self, fitness):
-        '''nature selection wrt pop's fitness'''
-        index = np.random.choice(np.arange(self.size), size=self.size, p=fitness / fitness.sum())
-        return self.pop[index]
+    def __select(self, fitness):
+        ''' nature selection '''
+        w = fitness / fitness.sum()
+        s = self.size
+        idx = choice(arange(s), size=s, p=w)
+        return self.pop[idx]
 
-    def cross(self, parent, pop):
-        ''' mating process (genes crossover)'''
-        if np.random.rand() < self.cross_rate:
-            idx = np.random.randint(0, self.size, size=1)
-            cross_points = np.random.randint(0, 2, size=self.DNA_length).astype(np.bool)
-            parent[cross_points] = pop[idx,cross_points]
-        return parent
+    def __cross(self, pa, pop):
+        '''
+        mating process (genes crossover)
+        :param pa: parent DNA
+        :param pop: population
+        :return:
+        '''
+        if rand() < self.cr:
+            idx = randint(0, self.size, size=1)
+            cross_idx = randint(0, 2, size=self.Dna_Len).astype(np.bool)
+            pa[cross_idx] = pop[idx, cross_idx]
+        return pa
 
-    def mutate(self, child):
-        for point in range(0, self.DNA_length):
-            if np.random.rand() < self.mutate_rate:
-                child[point] = 1 if child[point] == 0 else 0
-        return child
+    def __mutate(self, ch):
+        '''
+        :param ch: child DNA
+        :return: new child
+        '''
+        for point in range(0, self.Dna_Len):
+            if rand() < self.mr:
+                ch[point] = 1 if ch[point] == 0 else 0
+        return ch
+
+    def compute(self, niter=100):
+        '''
+        Main Computing Loop
+        :param niter: int, number of iterations
+                    number of generation
+        :return: best X, and best y
+        '''
+        bestX = self.__Bin2Dec(self.pop[0])
+        bestY = self.f(bestX)
+        t4plot = [0]
+        y4plot = [bestY]
+        tx, ty = bestX, bestY
+        for i in range(niter):
+            X = self.__Bin2Dec(self.pop)
+            Y = self.f(X)
+            fit = self.__fitness(Y)
+            tx = X[argmin(Y)]
+            ty = min(Y)
+            self.pop = self.__select(fit)
+            pop = self.pop.copy()
+            for pa in self.pop:
+                ch = self.__cross(pa, pop)
+                ch = self.__mutate(ch)
+                pa = ch
+            if ty < bestY:
+                bestX, bestY = tx, ty
+            t4plot.append(i + 1)
+            y4plot.append(bestY)
+        s1 = "Global Minimum: xmin = {0}, "
+        s2 = "f(xmin) = {1:.6f}"
+        tmps = s1 + s2
+        print(tmps.format(bestX, bestY))
+        self.__conver_plot(t4plot, y4plot)
+        return bestX, bestY
+
+    def __conver_plot(self, x, y):
+        '''
+        Convergence Process Plotting
+        :param x: list, X
+        :param y: list, y
+        :return:
+        '''
+        plt.scatter(x, y, marker='*', s=10)
+        plt.grid()
+        plt.title('Convergence Process')
+        plt.xlabel('X')
+        plt.ylabel('y')
+        plt.show()
+
 
 if __name__ == '__main__':
-    def f(x): return np.sin(10 * x) * x + np.cos(2 * x) * x  # to find the maximum of this function
+    def f(x):
+        ret = (x - 2) * (x + 3) * (x + 8) * (x - 9)
+        return ret
 
-    plt.ion()
-    ga = GA(f, 100, 0.8, 0.003, 200, [0, 5], 1e-3)
-    x = np.linspace(*ga.bnds, 200)
-    ans = np.array([]) #
-    for _ in range(ga.generations_n):
-        f_values = f(ga.binary_to_decimal(ga.pop))
 
-        if 'sca' in globals(): sca.remove()
-        plt.plot(x, f(x),color='c')
-        sca = plt.scatter(ga.binary_to_decimal(ga.pop), f_values, s=100, lw=0, c='blue', alpha=0.5);
-        plt.pause(0.05)
+    ga = GA(f=f, ps=50, cr=0.8, mr=0.005, bnd=[-10, 10], tol=1e-3)
+    bestX, bestY = ga.compute(niter=200)
 
-        fit = ga.fitness(f_values)
-        print('Best DNA: ', ga.pop[np.argmax(fit), :])
-        ans = np.append(ans, ga.pop[np.argmax(fit), :]) #record answer
-        ga.pop = ga.select(fit)
-        pop_copy = ga.pop.copy()
-        for parent in ga.pop:
-            child = ga.cross(parent, pop_copy)
-            child = ga.mutate(child)
-            parent = child
-    #record best answer
-    ans_size = ans.size
-    ans = ans.reshape(int(ans_size / ga.DNA_length), ga.DNA_length)
-    ans_decimal = ga.binary_to_decimal(ans)
-    y_ans = f(ans_decimal)
-    re = ans_decimal[np.argmax(y_ans)]
-    print()
-    plt.plot(x, f(x))
-    plt.plot(re, f(re), '*r')
-
-    plt.ioff()
-    plt.show()
