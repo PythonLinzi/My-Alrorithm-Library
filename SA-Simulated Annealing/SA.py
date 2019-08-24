@@ -24,7 +24,7 @@ def Bounds(x):
 
 def f(x):
     y, bnds = target_func(x), Bounds(x)
-    penelty = 0x3f3f3f3f # 注意适当调整惩罚系数
+    penelty = 1e30 # 惩罚系数
     for value in bnds:
         if value > 0: # violation of constrains
             y += (penelty * value)
@@ -80,4 +80,5 @@ y = target_func(x)
 plt.plot(x, y, 'b', best_ans, f(best_ans), '*r')
 plt.annotate('Best Point', xy=(best_ans, f(best_ans)), xytext=(best_ans + 1, f(best_ans) + 999),
                  arrowprops=dict(facecolor='black', shrink=0.005))
+plt.grid()
 plt.show()
