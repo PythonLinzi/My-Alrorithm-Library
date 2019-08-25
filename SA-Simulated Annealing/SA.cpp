@@ -23,7 +23,7 @@ double target_func(double x) {return (x - 2) * (x + 3) * (x + 8) * (x - 9);}
 
 // 若无约束则可省略惩罚步骤
 double f(double x){ // 违背约束条件则惩罚
-    double y = target_func(x), penalty = 0x3f3f3f3f, bnds;
+    double y = target_func(x), penalty = LONG_LONG_MAX, bnds;
     bnds = x - 10; // x - 10 <= 0
     if (bnds > 0){y += (penalty * bnds);}
     bnds = -x - 10; // -x - 10 <= 0
