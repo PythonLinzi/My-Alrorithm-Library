@@ -28,13 +28,37 @@ class GA():
         self.tol = tol # 精度 precision
         self.D = D
         self.isInt = isInt
-        self.lb = bnd[0]
-        self.ub = bnd[1]
-        self.u_b = bnd[1] - bnd[0]
-        self.Dna_Len = int(log2(self.u_b / tol)) + 1
+        self.lb = bnd[:, 0]
+        self.ub = bnd[:, 1]
+        self.u_b = self.ub - self.lb
+        tmp = log2(self.u_b / tol) + 1
+        self.Dna_Len = []
+        for l in tmp:
+            self.Dna_Len.append(int(l))
         n, m = self.size, self.Dna_Len
-        self.pop = randint(0, 2, (n, D, m))
-        self.dot2 = 2 ** arange(self.Dna_Len)[::-1]
+        self.pop = self.__PopInit(n, D, m)
+        self.dot2 = []
+        for l in self.Dna_Len:
+            dot2 = 2 ** arange(l)[::-1]
+            self.dot2.append(dot2)
+        self.dot2 = array(self.dot2)
+
+    def __PopInit(self, n, D, m):
+        '''
+        Population Initialize
+        :param n: int, size of Pop
+        :param D: int, dimensions
+        :param m: list, [d1, d2, ...(dna_len)]
+        :return: ndarray, pop
+        '''
+        pop = []
+        for i in range(n):
+            ind = []
+            for j in range(D):
+                tmp = randint(0, 2, m[j])
+                ind.append(tmp)
+            pop.append(ind)
+        return array(pop)
 
     def __func(self, X:ndarray):
         y = []
@@ -56,11 +80,12 @@ class GA():
         :param ind: individual
         :return: np.ndarray
         '''
-        ret = []
-        M = float(2 ** self.Dna_Len)
+        ret, M = [], []
+        for l in self.Dna_Len:
+            M.append(float(2 ** l))
         for j in range(self.D):
-            x = dot(ind[j], self.dot2) / M * self.u_b
-            x += self.lb
+            x = dot(ind[j], self.dot2[j]) / M[j] * self.u_b[j]
+            x += self.lb[j]
             if self.isInt[j]:
                 ret.append(floor(x))
             else:
@@ -97,10 +122,11 @@ class GA():
         m = self.Dna_Len
         if rand() < self.cr:
             idx = randint(0, n, size=1)
-            pa_ = np.reshape(pop[idx], (D, m))
+            pa_ = np.reshape(pop[idx], pa.shape)
+            #pa_ = np.reshape(pop[idx], (D, m[j]))
             for j in range(D):
-                c_idx = randint(0, 2, size=m).astype(np.bool)
-                pa[j, c_idx] = pa_[j, c_idx]
+                c_idx = randint(0, 2, size=m[j]).astype(np.bool)
+                pa[j][c_idx] = pa_[j][c_idx]
         return pa
 
     def __mutate(self, ch):
@@ -111,12 +137,12 @@ class GA():
         m = self.Dna_Len
         D = self.D
         for i in range(D):
-            for j in range(m):
+            for j in range(m[i]):
                 if rand() < self.mr:
                     ch[i][j] = 1 if ch[i][j] == 0 else 0
         return ch
 
-    def compute(self, niter=100):
+    def compute(self, niter=100, plot=True):
         '''
         Main Computing Loop
         :param niter: int, number of iterations
@@ -128,6 +154,7 @@ class GA():
         t4plot = [0]
         y4plot = [bestY]
         tx, ty = bestX, bestY
+
         ss = 'iter = {0},  y = {1}'
         for i in range(niter):
             print(ss.format(i + 1, bestY))
@@ -150,7 +177,9 @@ class GA():
         s2 = "f(xmin) = {1:.6f}"
         tmps = s1 + s2
         print(tmps.format(bestX, bestY))
-        self.__conver_plot(t4plot, y4plot)
+        if plot == True:
+            self.__conver_plot(t4plot, y4plot)
+
         return bestX, bestY
 
     def __conver_plot(self, x, y):
@@ -174,7 +203,8 @@ if __name__ == '__main__':
         return ret
 
     isInt = [True] * 3
-    ga = GA(f=f, ps=50, cr=0.8, mr=0.05, bnd=[-10, 10], tol=1e-3, D=3, isInt=isInt)
+    bnds = array([[-10, 10], [-10, 10], [-10, 10]])
+    ga = GA(f=f, ps=50, cr=0.8, mr=0.05, bnd=bnds, tol=1e-3, D=3, isInt=isInt)
     bestX, bestY = ga.compute(niter=200)
 
 '''
