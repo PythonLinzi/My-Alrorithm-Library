@@ -18,7 +18,7 @@ class GA():
         :param bnd: np.ndarray, bounds
         :param tol: tolerance
         :param D: int, dimensions of vars
-        :param isInt: list, indecies of vars which is integer
+        :param isInt: List[bool], indecies of vars which is integer
         '''
         self.f = f
         self.size = ps
@@ -123,7 +123,6 @@ class GA():
         if rand() < self.cr:
             idx = randint(0, n, size=1)
             pa_ = np.reshape(pop[idx], pa.shape)
-            #pa_ = np.reshape(pop[idx], (D, m[j]))
             for j in range(D):
                 c_idx = randint(0, 2, size=m[j]).astype(np.bool)
                 pa[j][c_idx] = pa_[j][c_idx]
@@ -131,6 +130,7 @@ class GA():
 
     def __mutate(self, ch):
         '''
+        Mutation Process
         :param ch: child DNA
         :return: new child
         '''
@@ -142,11 +142,11 @@ class GA():
                     ch[i][j] = 1 if ch[i][j] == 0 else 0
         return ch
 
-    def compute(self, niter=100, plot=True):
+    def compute(self, niter=100, plot=True, bf=None):
         '''
         Main Computing Loop
         :param niter: int, number of iterations
-                    number of generation
+        :param bf: Boundary Function
         :return: best X, and best y
         '''
         bestX = self.__B2D(self.pop[0])
@@ -154,7 +154,6 @@ class GA():
         t4plot = [0]
         y4plot = [bestY]
         tx, ty = bestX, bestY
-
         ss = 'iter = {0},  y = {1}'
         for i in range(niter):
             print(ss.format(i + 1, bestY))
@@ -171,15 +170,19 @@ class GA():
                 pa = ch
             if ty < bestY:
                 bestX, bestY = tx, ty
-            t4plot.append(i + 1)
-            y4plot.append(bestY)
+            if bf:
+                if np.all(bf(bestX) <= 0):
+                    t4plot.append(i + 1)
+                    y4plot.append(bestY)
+            else:
+                t4plot.append(i + 1)
+                y4plot.append(bestY)
         s1 = "Global Minimum: xmin = {0}, "
         s2 = "f(xmin) = {1:.6f}"
         tmps = s1 + s2
         print(tmps.format(bestX, bestY))
         if plot == True:
             self.__conver_plot(t4plot, y4plot)
-
         return bestX, bestY
 
     def __conver_plot(self, x, y):
@@ -191,8 +194,8 @@ class GA():
         '''
         plt.scatter(x, y, marker='*', s=10)
         plt.grid()
-        plt.title('Convergence Process')
-        plt.xlabel('X')
+        plt.title('GA Convergence Process')
+        plt.xlabel('niter')
         plt.ylabel('y')
         plt.show()
 
@@ -224,7 +227,7 @@ if __name__ == '__main__':
     isInt = [True] * 5
     bnds = array([[0, 60], [95, 100], [0, 1], [95, 100], [10, 30]])
     ga = GA(f=f, ps=50, cr=0.8, mr=0.3, bnd=bnds, tol=1e-2, D=5, isInt=isInt)
-    bestX, bestY = ga.compute(niter=500, plot=False)
+    bestX, bestY = ga.compute(niter=500, plot=True, bf=bounds)
 
     acc = 100 * bestY / -51568
     if np.all(bounds(bestX) <= 0):
@@ -233,7 +236,7 @@ if __name__ == '__main__':
     #print(f(array([50, 99, 0, 99, 20])))
 
 '''
-Global Minimum: xmin = [50. 98.  0. 99. 19.], f(xmin) = -51297.000000
+Global Minimum: xmin = [48. 99.  0. 99. 20.], f(xmin) = -51388.000000
 满足约束条件!
-Accuracy = 99.47448029785913%
+Accuracy = 99.65094632330127%
 '''
