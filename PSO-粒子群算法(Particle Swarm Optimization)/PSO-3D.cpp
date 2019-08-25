@@ -15,7 +15,7 @@ using namespace std;
  *  w: 惯性因子(>=0)
  *  c1, c2: 学习因子(通常c1=c2=2)
  *  K: 收敛因子(保证收敛性, 通常令c1+c2=4.1, s.t. K=0.729)
- *  bnds: 取值范围, 注意初始值X0的选取要在取值范围内
+ *  bnds: 取值范围
  * 采用罚函数法将约束条件加入目标函数
  */
 
@@ -38,7 +38,7 @@ double target_func(Points p){return p.x[0] * p.x[0] + p.x[1] * p.x[1] + p.x[2] *
 
 // 若无约束则可省略惩罚步骤
 double f(Points p){ // 违背约束条件则惩罚
-    double y = target_func(p), penalty = 0x3f3f3f3f, bnds;
+    double y = target_func(p), penalty = LONG_LONG_MAX, bnds;
     if (-p.x[0] > 0){y += (penalty * (-p.x[0]));} // -x1 <= 0
     if (-p.x[1] > 0){y += (penalty * (-p.x[1]));} // -x2 <= 0
     if (-p.x[2] > 0){y += (penalty * (-p.x[2]));} // -x3 <= 0
@@ -72,15 +72,16 @@ void PSO(){
         }
     }
     // main loop
+    double now, pb, gb;
     for (int l = 0; l < niter; ++l) {
         for (int i = 0; i < N; ++i) {
             for (int j = 0; j < v[i].size; ++j) {
-                v[i].x[j] = K * (v[i].x[j] + c1 * getRand()
-                        * (pbest_x[i].x[j] - x[i].x[j]) + c2 * getRand() * (gbest_x.x[j] - x[i].x[j]));
+                now = w * v[i].x[j];
+                pb = c1 * getRand() * (pbest_x[i].x[j] - x[i].x[j]);
+                gb = c2 * getRand() * (gbest_x.x[j] - x[i].x[j]);
+                v[i].x[j] = now + pb + gb;
                 v[i].x[j] = min(v[i].x[j], vmax);
                 v[i].x[j] = max(v[i].x[j], vmin);
-            }
-            for (int j = 0; j < x[i].size; ++j) {
                 x[i].x[j] += v[i].x[j];
             }
             y[i] = f(x[i]);
@@ -115,7 +116,7 @@ int main()
 }
 
 /*
- * Global Minimum: xmin = 0.552167 1.20326 0.947824
- * f(xmin) = 10.6511
+ * Global Minimum: xmin = 0.572678 1.21831 0.970779
+ * f(xmin) = 10.7547
  * Running Time: 0s
  */
