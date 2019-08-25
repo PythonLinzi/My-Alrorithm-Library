@@ -2,14 +2,14 @@ import numpy as np
 from numpy.random import rand, randint
 from numpy.random import choice
 from numpy import arange, log2, dot
-from numpy import argmin, array
-from numpy import ndarray, floor
+from numpy import array, argmin
+from numpy import ndarray
 import matplotlib.pyplot as plt
 
 
 class GA():
-    '''genetic algorithm'''
-    def __init__(self, f, ps, cr, mr, bnd, tol, D, isInt):
+    '''Genetic Algorithm'''
+    def __init__(self, f, ps, cr, mr, bnd, tol, D):
         '''
         :param f: Target Function
         :param ps: int, population size
@@ -18,7 +18,6 @@ class GA():
         :param bnd: np.ndarray, bounds
         :param tol: tolerance
         :param D: int, dimensions of vars
-        :param isInt: list, indecies of vars which is integer
         '''
         self.f = f
         self.size = ps
@@ -27,7 +26,6 @@ class GA():
         self.bnd = bnd # 取值范围
         self.tol = tol # 精度 precision
         self.D = D
-        self.isInt = isInt
         self.lb = bnd[:, 0]
         self.ub = bnd[:, 1]
         self.u_b = self.ub - self.lb
@@ -86,10 +84,7 @@ class GA():
         for j in range(self.D):
             x = dot(ind[j], self.dot2[j]) / M[j] * self.u_b[j]
             x += self.lb[j]
-            if self.isInt[j]:
-                ret.append(floor(x))
-            else:
-                ret.append(x)
+            ret.append(x)
         return array(ret)
 
     def __Bin2Dec(self, pop):
@@ -123,7 +118,6 @@ class GA():
         if rand() < self.cr:
             idx = randint(0, n, size=1)
             pa_ = np.reshape(pop[idx], pa.shape)
-            #pa_ = np.reshape(pop[idx], (D, m[j]))
             for j in range(D):
                 c_idx = randint(0, 2, size=m[j]).astype(np.bool)
                 pa[j][c_idx] = pa_[j][c_idx]
@@ -131,6 +125,7 @@ class GA():
 
     def __mutate(self, ch):
         '''
+        Mutation Process
         :param ch: child DNA
         :return: new child
         '''
@@ -142,11 +137,11 @@ class GA():
                     ch[i][j] = 1 if ch[i][j] == 0 else 0
         return ch
 
-    def compute(self, niter=100, plot=True):
+    def compute(self, niter=100, plot=True, bf=None):
         '''
         Main Computing Loop
         :param niter: int, number of iterations
-                    number of generation
+        :param bf: Boundary Function
         :return: best X, and best y
         '''
         bestX = self.__B2D(self.pop[0])
@@ -154,7 +149,6 @@ class GA():
         t4plot = [0]
         y4plot = [bestY]
         tx, ty = bestX, bestY
-
         ss = 'iter = {0},  y = {1}'
         for i in range(niter):
             print(ss.format(i + 1, bestY))
@@ -171,15 +165,19 @@ class GA():
                 pa = ch
             if ty < bestY:
                 bestX, bestY = tx, ty
-            t4plot.append(i + 1)
-            y4plot.append(bestY)
+            if bf:
+                if np.all(bf(bestX) <= 0):
+                    t4plot.append(i + 1)
+                    y4plot.append(bestY)
+            else:
+                t4plot.append(i + 1)
+                y4plot.append(bestY)
         s1 = "Global Minimum: xmin = {0}, "
         s2 = "f(xmin) = {1:.6f}"
         tmps = s1 + s2
         print(tmps.format(bestX, bestY))
         if plot == True:
             self.__conver_plot(t4plot, y4plot)
-
         return bestX, bestY
 
     def __conver_plot(self, x, y):
@@ -192,48 +190,21 @@ class GA():
         plt.scatter(x, y, marker='*', s=10)
         plt.grid()
         plt.title('Convergence Process')
-        plt.xlabel('X')
+        plt.xlabel('niter')
         plt.ylabel('y')
         plt.show()
 
 
 if __name__ == '__main__':
-    def target(x:ndarray):
-        ret = x[0] ** 2 + x[1] ** 2 + 3 * x[2] ** 2 + 4 * x[3] ** 2 + 2 * x[4] ** 2 \
-              - 8 * x[0] - 2 * x[1] - 3 * x[2] - x[3] - 2 * x[4]
-        return -ret
-
-    def bounds(x:ndarray):
-        bnds = []
-        bnds.append(x.sum() - 400)
-        bnds.append(x[0] + 2 * x[1] + 2 * x[2] + x[3] + 6 * x[4] - 800)
-        bnds.append(2 * x[0] + x[1] + 6 * x[2] - 200)
-        bnds.append(x[2] + x[3] + 5 * x[4] - 200)
-        return array(bnds)
-
-
     def f(x:ndarray):
-        y = target(x)
-        penalty = 1e30
-        bnds = bounds(x)
-        for bnd in bnds:
-            if bnd > 0:
-                y += (penalty * bnd)
-        return y
+        ret = x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + 8
+        return ret
 
-    isInt = [True] * 5
-    bnds = array([[0, 60], [95, 100], [0, 1], [95, 100], [10, 30]])
-    ga = GA(f=f, ps=50, cr=0.8, mr=0.3, bnd=bnds, tol=1e-2, D=5, isInt=isInt)
-    bestX, bestY = ga.compute(niter=500, plot=True)
 
-    acc = 100 * bestY / -51568
-    if np.all(bounds(bestX) <= 0):
-        print("满足约束条件!")
-    print('Accuracy = {0}%'.format(acc))
-    #print(f(array([50, 99, 0, 99, 20])))
+    bnds = array([[-10, 10], [-10, 10], [-10, 10]])
+    ga = GA(f=f, ps=50, cr=0.8, mr=0.05, bnd=bnds, tol=1e-3, D=3)
+    bestX, bestY = ga.compute(niter=200)
 
 '''
-Global Minimum: xmin = [50. 98.  0. 99. 19.], f(xmin) = -51297.000000
-满足约束条件!
-Accuracy = 99.47448029785913%
+Global Minimum: xmin = [0. 0. 0.], f(xmin) = 8.000000
 '''
