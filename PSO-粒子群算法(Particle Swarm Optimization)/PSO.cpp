@@ -15,7 +15,7 @@ using namespace std;
  *  w: 惯性因子(>=0)
  *  c1, c2: 学习因子(通常c1=c2=2)
  *  K: 收敛因子(保证收敛性, 通常令c1+c2=4.1, s.t. K=0.729)
- *  bnds: 取值范围, 注意初始值X0要在取值范围内
+ *  bnds: 取值范围
  * 采用罚函数法将约束条件加入目标函数
  */
 
@@ -26,7 +26,7 @@ double target_func(double x) {return (x - 2) * (x + 3) * (x + 8) * (x - 9);}
 
 // 若无约束则可省略惩罚步骤
 double f(double x){ // 违背约束条件则惩罚
-    double y = target_func(x), penalty = 0x3f3f3f3f, bnds;
+    double y = target_func(x), penalty = LONG_LONG_MAX, bnds;
     bnds = x - 10; // x - 10 <= 0
     if (bnds > 0){y += (penalty * bnds);}
     bnds = -x - 10; // -x - 10 <= 0
