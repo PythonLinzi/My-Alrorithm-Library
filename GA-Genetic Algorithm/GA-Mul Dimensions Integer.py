@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 class GA():
-    '''genetic algorithm'''
+    '''Genetic Algorithm'''
     def __init__(self, f, ps, cr, mr, bnd, tol, D, isInt):
         '''
         :param f: Target Function
@@ -123,7 +123,6 @@ class GA():
         if rand() < self.cr:
             idx = randint(0, n, size=1)
             pa_ = np.reshape(pop[idx], pa.shape)
-            #pa_ = np.reshape(pop[idx], (D, m[j]))
             for j in range(D):
                 c_idx = randint(0, 2, size=m[j]).astype(np.bool)
                 pa[j][c_idx] = pa_[j][c_idx]
@@ -131,6 +130,7 @@ class GA():
 
     def __mutate(self, ch):
         '''
+        Mutation Process
         :param ch: child DNA
         :return: new child
         '''
@@ -142,11 +142,11 @@ class GA():
                     ch[i][j] = 1 if ch[i][j] == 0 else 0
         return ch
 
-    def compute(self, niter=100, plot=True):
+    def compute(self, niter=100, plot=True, bf=None):
         '''
         Main Computing Loop
         :param niter: int, number of iterations
-                    number of generation
+        :param bf: Boundary Function
         :return: best X, and best y
         '''
         bestX = self.__B2D(self.pop[0])
@@ -154,7 +154,6 @@ class GA():
         t4plot = [0]
         y4plot = [bestY]
         tx, ty = bestX, bestY
-
         ss = 'iter = {0},  y = {1}'
         for i in range(niter):
             print(ss.format(i + 1, bestY))
@@ -171,15 +170,19 @@ class GA():
                 pa = ch
             if ty < bestY:
                 bestX, bestY = tx, ty
-            t4plot.append(i + 1)
-            y4plot.append(bestY)
+            if bf:
+                if np.all(bf(bestX) <= 0):
+                    t4plot.append(i + 1)
+                    y4plot.append(bestY)
+            else:
+                t4plot.append(i + 1)
+                y4plot.append(bestY)
         s1 = "Global Minimum: xmin = {0}, "
         s2 = "f(xmin) = {1:.6f}"
         tmps = s1 + s2
         print(tmps.format(bestX, bestY))
         if plot == True:
             self.__conver_plot(t4plot, y4plot)
-
         return bestX, bestY
 
     def __conver_plot(self, x, y):
@@ -192,7 +195,7 @@ class GA():
         plt.scatter(x, y, marker='*', s=10)
         plt.grid()
         plt.title('Convergence Process')
-        plt.xlabel('X')
+        plt.xlabel('niter')
         plt.ylabel('y')
         plt.show()
 
