@@ -28,7 +28,7 @@ double target_func(Points p){return p.x1 * p.x1 + p.x2 * p.x2 + p.x3 * p.x3 + 8;
 
 // 若无约束则可省略惩罚步骤
 double f(Points p){ // 违背约束条件则惩罚
-    double y = target_func(p), penalty = 0x3f3f3f3f, bnds;
+    double y = target_func(p), penalty = LONG_LONG_MAX, bnds;
     if (-p.x1 > 0){y += (penalty * (-p.x1));} // -x1 <= 0
     if (-p.x2 > 0){y += (penalty * (-p.x2));} // -x2 <= 0
     if (-p.x3 > 0){y += (penalty * (-p.x3));} // -x3 <= 0
@@ -99,8 +99,6 @@ int main()
 
 /*
  * coef = 0.99
- * Best X = [0.5728, 1.1955, 0.9517], min f(x) = 10.6630
+ * Best X = [0.5765, 1.1949, 0.9538], min f(x) = 10.6697
  * Running Time: 5s
- * X = [0.55216734, 1.20325918, 0.94782404]
- * f(X) = 10.651091840663447
  */
