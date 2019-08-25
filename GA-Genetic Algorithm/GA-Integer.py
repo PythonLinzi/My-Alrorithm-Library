@@ -68,6 +68,7 @@ class GA():
 
     def __mutate(self, ch):
         '''
+        Mutation Process
         :param ch: child DNA
         :return: new child
         '''
@@ -76,11 +77,11 @@ class GA():
                 ch[point] = 1 if ch[point] == 0 else 0
         return ch
 
-    def compute(self, niter=100):
+    def compute(self, niter=100, bf=None):
         '''
         Main Computing Loop
         :param niter: int, number of iterations
-                    number of generation
+        :param bf: Boundary Function
         :return: best X, and best y
         '''
         bestX = self.__Bin2Dec(self.pop[0])
@@ -104,8 +105,13 @@ class GA():
                 pa = ch
             if ty < bestY:
                 bestX, bestY = tx, ty
-            t4plot.append(i + 1)
-            y4plot.append(bestY)
+            if bf:
+                if np.all(bf(bestX) <= 0):
+                    t4plot.append(i + 1)
+                    y4plot.append(bestY)
+            else:
+                t4plot.append(i + 1)
+                y4plot.append(bestY)
         s1 = "Global Minimum: xmin = {0}, "
         s2 = "f(xmin) = {1:.6f}"
         tmps = s1 + s2
