@@ -1,5 +1,4 @@
 '''
-MILNP: Mixed Integer Nonlinear Programming
 Particle Swarm Optimization Algorithm
 Pay attention to adjusting Parameters
 Parameters:
@@ -13,26 +12,24 @@ Parameters:
 import numpy as np
 from numpy import ndarray, array, abs
 from numpy import sqrt, append
-from numpy.random import rand, randint
+from numpy.random import rand
 import matplotlib.pyplot as plt
 
 
 class PSO:
     ''' Particle Swarm Optimization '''
-    def __init__(self, func, bnds, cons, isInt, D=5):
+    def __init__(self, func, bnds, cons, D=5):
         '''
         Initialization
         :param func: Target Function(Min)
         :param bnds: ndarray, Bounds of Vars
         :param cons: Constraints Function, CF(x) <= 0
-        :param isInt: ndarray, array([bool])
         :param D: int, dimensions of vars
         '''
         self.func = func
         self.bnds = bnds
         self.cons = cons
         self.size = 20
-        self.isInt = isInt
         self.D = D
         self.vrange = [-1, 1]
         self.w = 1
@@ -61,16 +58,12 @@ class PSO:
         n = self.size
         m = self.D
         bnds = self.bnds
-        isInt = self.isInt
         x = array([])
         for i in range(self.size):
             xi = array([])
             for j in range(m):
-                l, u = bnds[j]
-                if isInt[j] == True:
-                    xij = randint(l, u + 1)
-                else:
-                    xij = (u - l) * rand() + l
+                lb, ub = bnds[j]
+                xij = (ub - lb) * rand() + lb
                 xi = append(xi, xij)
             x = append(x, xi)
         return x.reshape(n, m)
@@ -80,26 +73,12 @@ class PSO:
         v = (u - l) * rand(self.size, self.D) + l
         return v
 
-    def __sign(self, v):
-        if v > 0:
-            return 1
-        elif v < 0:
-            return -1
-        if rand() > 2 / 3:
-            return 1
-        elif rand() < 1 / 3:
-            return -1
-        else:
-            return 0
-
     def __Cons_Check(self, x:ndarray):
         cons = self.cons(x)
         if np.all(cons <= self.tol):
             print("满足约束！")
-            return True
         else:
             print(cons)
-            return False
 
     def __set_tol(self, tol):
         self.tol = tol
@@ -143,7 +122,7 @@ class PSO:
                     v[i][j] = K * (v[i][j] + pb + gb)
                     v[i][j] = min(v[i][j], vmax)
                     v[i][j] = max(v[i][j], vmin)
-                    x[i][j] += self.__sign(v[i][j])
+                x[i] += v[i]
                 y[i] = f(x[i])
                 if y[i] < py[i]:
                     px[i], py[i] = x[i], y[i]
@@ -163,34 +142,38 @@ class PSO:
 
 
 
+
 if __name__ == '__main__':
-    def func(x:ndarray):
-        ret = x[0] ** 2 + x[1] ** 2 + 3 * x[2] ** 2 + 4 * x[3] ** 2 + 2 * x[4] ** 2 \
-              - 8 * x[0] - 2 * x[1] - 3 * x[2] - x[3] - 2 * x[4]
-        return -ret
+    def func(x: np.ndarray):
+        return x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + 8
 
 
-    def constraints(x:ndarray):
-        cons = []
-        cons.append(x.sum() - 400)
-        cons.append(x[0] + 2 * x[1] + 2 * x[2] + x[3] + 6 * x[4] - 800)
-        cons.append(2 * x[0] + x[1] + 6 * x[2] - 200)
-        cons.append(x[2] + x[3] + 5 * x[4] - 200)
-        for i in range(len(bnds)):
-            cons.append(x[i] - bnds[i][1])
-            cons.append(bnds[i][0] - x[i])
-        return array(cons)
+    def constraints(x: np.ndarray) -> np.ndarray:
+        ''' constrains <= 0 '''
+        ans = array([-xx for xx in x])  # -X <= 0
+        # -x1^2 + x2 - x3^2 <= 0
+        con = -x[0] * x[0] + x[1] - x[2] * x[2]
+        ans = append(ans, con)
+        # x1 + x2^2 + x3^2 - 20 <= 0
+        con = x[0] + x[1] * x[1] + x[2] * x[2] - 20
+        ans = append(ans, con)
+        # -x1 - x2^2 + 2 <= 0
+        con = -x[0] - x[1] * x[1] + 2
+        ans = append(ans, con)
+        # -x2 - 2 * x3^2 + 3 <= 0
+        con = -x[1] - 2 * x[2] * x[2] + 3
+        ans = append(ans, con)
+        return ans
 
 
-    bnds = array([[0, 60], [95, 99], [0, 1], [95, 99], [10, 30]])
-    isInt = array([True, True, True, True, True])
-    pso = PSO(func=func, bnds=bnds, cons=constraints, isInt=isInt, D=5)
+    bnds = array([[0, 1], [0, 3], [0, 3]])
+    pso = PSO(func=func, bnds=bnds, cons=constraints, D=3)
     pso.set_PopSize(size=20)
-    pso.compute(niter=100, tol=1e-3, plot=True)
+    pso.compute(niter=200, tol=1e-4, plot=True)
 
 
 
 '''
-Global Minimum: xmin = [50. 99.  0. 99. 20.], f(xmin) = -51568.000000
-满足约束！
+Global Minimum: xmin = [0.55216734 1.20325918 0.94782404], f(xmin) = 10.651092
+Running Time: 0:00:01.557554
 '''
