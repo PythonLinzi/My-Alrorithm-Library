@@ -23,12 +23,12 @@ class GA():
         self.size = ps
         self.cr = cr
         self.mr = mr
-        self.bnd = bnd # 取值范围
-        self.tol = tol # 精度 precision
+        self.bnd = bnd
+        self.tol = tol
         self.D = D
         self.isInt = isInt
         self.lb = bnd[:, 0]
-        self.ub = bnd[:, 1]
+        self.ub = bnd[:, 1] + 1
         self.u_b = self.ub - self.lb
         tmp = log2(self.u_b / tol) + 1
         self.Dna_Len = []
@@ -334,7 +334,7 @@ class GSA:
     def __conver_plot(self, t1, y1, t2, y2):
         '''
         Convergence Process Plotting
-        :param x: list, X
+        :param t: list, t
         :param y: list, y
         :return:
         '''
@@ -344,7 +344,9 @@ class GSA:
         gl = 'GA(niter/1)'
         sl = 'SA(niter/100)'
         plt.scatter(t1, y1, marker='*', s=10, label=gl)
+        #plt.plot(t1, y1, linewidth=1, c='gray')
         plt.scatter(t2, y2, marker='*', s=10, label=sl)
+        #plt.plot(t2, y2, linewidth=1, c='gray')
         plt.legend()
         plt.grid()
         plt.title('Convergence Process')
@@ -385,7 +387,7 @@ if __name__ == '__main__':
               - 8 * x[0] - 2 * x[1] - 3 * x[2] - x[3] - 2 * x[4]
         return -ret
 
-    bnds = array([[0, 60], [95, 99], [0, 1], [95, 99], [10, 30]])
+    bnds = array([[0, 50], [90, 99], [0, 5], [90, 99], [10, 30]])
     def constraints(x:ndarray):
         cons = []
         cons.append(x.sum() - 400)
@@ -407,11 +409,10 @@ if __name__ == '__main__':
         return y
 
 
-    bnd_ga = array([[0, 61], [95, 100], [0, 2], [95, 100], [10, 31]])
     isInt = [True] * 5
     gsa = GSA(func=f, bnd=bnds, n1=150, n2=200, D=5)
     gsa.ga_set(ps=30, cr=0.8, mr=0.1, bnd=bnds, tol=1e-2, isInt=isInt)
-    x, y = gsa.compute(bf=constraints)
+    x, y = gsa.compute(bf=constraints, plot=False)
     if np.all(constraints(x) <= 0):
         print("满足约束!")
 
