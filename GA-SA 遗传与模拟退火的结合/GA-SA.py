@@ -23,12 +23,12 @@ class GA():
         self.size = ps
         self.cr = cr
         self.mr = mr
-        self.bnd = bnd # 取值范围
-        self.tol = tol # 精度 precision
+        self.bnd = bnd
+        self.tol = tol
         self.D = D
         self.isInt = isInt
         self.lb = bnd[:, 0]
-        self.ub = bnd[:, 1]
+        self.ub = bnd[:, 1] + 1
         self.u_b = self.ub - self.lb
         tmp = log2(self.u_b / tol) + 1
         self.Dna_Len = []
@@ -380,32 +380,37 @@ class GSA:
 
 
 if __name__ == '__main__':
-    def target_func(x: ndarray):
-        return x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + 8
+    def target(x:ndarray):
+        ret = x[0] ** 2 + x[1] ** 2 + 3 * x[2] ** 2 + 4 * x[3] ** 2 + 2 * x[4] ** 2 \
+              - 8 * x[0] - 2 * x[1] - 3 * x[2] - x[3] - 2 * x[4]
+        return -ret
 
+    bnds = array([[0, 60], [95, 99], [0, 1], [95, 99], [10, 30]])
+    def constraints(x:ndarray):
+        cons = []
+        cons.append(x.sum() - 400)
+        cons.append(x[0] + 2 * x[1] + 2 * x[2] + x[3] + 6 * x[4] - 800)
+        cons.append(2 * x[0] + x[1] + 6 * x[2] - 200)
+        cons.append(x[2] + x[3] + 5 * x[4] - 200)
+        for i in range(len(bnds)):
+            cons.append(x[i] - bnds[i][1])
+            cons.append(bnds[i][0] - x[i])
+        return array(cons)
 
-    def Bounds(x: np.ndarray) -> ndarray:
-        ''' constrains <= 0 '''
-        ans = [-xx for xx in x]  # -X <= 0
-        ans.append(-x[0] * x[0] + x[1] - x[2] * x[2])  # -x1^2 + x2 - x3^2 <= 0
-        ans.append(x[0] + x[1] * x[1] + x[2] * x[2] - 20)  # x1 + x2^2 + x3^2 - 20 <= 0
-        ans.append(-x[0] - x[1] * x[1] + 2)  # -x1 - x2^2 + 2 <= 0
-        ans.append(-x[1] - 2 * x[2] * x[2] + 3)  # -x2 - 2 * x3^2 + 3 <= 0
-        return np.array(ans)
-
-
-    def f(x: ndarray):
-        y, bnds = target_func(x), Bounds(x)
-        penelty = 1e30  # 惩罚系数
-        for value in bnds:
-            if value > 0:  # violation of constrains
-                y += (penelty * value)
+    def f(x:ndarray):
+        y = target(x)
+        penalty = 1e30
+        cons = constraints(x)
+        for bnd in cons:
+            if bnd > 0:
+                y += (penalty * bnd)
         return y
 
 
-    bnds = array([[0, 10], [0, 10], [0, 10]])
-    gsa = GSA(func=f, bnd=bnds, n1=150, n2=200, D=3)
-    x, y = gsa.compute(bf=Bounds)
-    if np.all(Bounds(x) <= 0):
+    isInt = [False] * 5
+    gsa = GSA(func=f, bnd=bnds, n1=150, n2=200, D=5)
+    gsa.ga_set(ps=30, cr=0.8, mr=0.1, bnd=bnds, tol=1e-2, isInt=isInt)
+    x, y = gsa.compute(bf=constraints)
+    if np.all(constraints(x) <= 0):
         print("满足约束!")
 
